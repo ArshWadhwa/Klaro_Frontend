@@ -9,6 +9,8 @@ import { SignupRequest } from '@/types/auth.types';
 import toast from 'react-hot-toast';
 
 export default function SignupPage() {
+  type SignupTextField = Exclude<keyof SignupRequest, 'role'>;
+
   const router = useRouter();
   const [formData, setFormData] = useState<SignupRequest>({
     fullName: '',
@@ -64,7 +66,8 @@ export default function SignupPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const field = e.target.name as SignupTextField;
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
   return (
