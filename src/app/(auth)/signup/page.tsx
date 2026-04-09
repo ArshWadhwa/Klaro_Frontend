@@ -41,7 +41,11 @@ export default function SignupPage() {
     }
 
     try {
-      await authApi.signup(formData);
+      const signupPayload: SignupRequest = {
+        ...formData,
+        role: formData.role,
+      };
+      await authApi.signup(signupPayload);
       toast.success('Account created! Redirecting to login...');
       setSuccess(true);
       setTimeout(() => {
