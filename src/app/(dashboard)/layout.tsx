@@ -8,8 +8,6 @@ import {
   Users,
   FolderKanban,
   BarChart3,
-  FileText,
-  Crown,
   LogOut,
   Menu,
   X,
@@ -24,8 +22,7 @@ import { useSidebarStore } from '@/lib/stores/sidebarStore';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated, logout, isAdmin, fetchCurrentUser } =
-    useAuthStore();
+  const { user, isAuthenticated, logout, fetchCurrentUser } = useAuthStore();
   const { isCollapsed } = useSidebarStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isChecking, setIsChecking] = useState(true);

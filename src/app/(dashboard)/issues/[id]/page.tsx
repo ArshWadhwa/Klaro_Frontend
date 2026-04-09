@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, MessageSquare, Calendar, User } from 'lucide-react';
 import { commentsApi } from '@/lib/api/comments.api';
-import { useAuthStore } from '@/lib/stores/authStore';
 import toast from 'react-hot-toast';
 import { IssueDetails } from '@/types/issue.types';
 import { Comment } from '@/types/comment.types';

@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Loader2, Sparkles, Users } from 'lucide-react';
+import { ArrowLeft, Loader2, Sparkles } from 'lucide-react';
 import { issuesApi } from '@/lib/api/issues.api';
 import { projectsApi } from '@/lib/api/projects.api';
 import { aiApi } from '@/lib/api/ai.api';
-import { useAuthStore } from '@/lib/stores/authStore';
 import toast from 'react-hot-toast';
 import { Project } from '@/types/project.types';
 import { IssuePriority, IssueStatus, IssueType } from '@/types/issue.types';
@@ -15,7 +14,6 @@ export default function CreateIssuePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const projectIdParam = searchParams.get('projectId');
-  const user = useAuthStore((state: any) => state.user);
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);

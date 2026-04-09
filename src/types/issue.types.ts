@@ -1,7 +1,7 @@
 // Issue related types
 
 export type IssuePriority = 'LOW' | 'MEDIUM' | 'HIGH';
-export type IssueStatus = 'TO_DO' | 'IN_PROGRESS' | 'DONE';
+export type IssueStatus = 'TO_DO' | 'IN_PROGRESS' | 'DONE' | 'OPEN' | 'RESOLVED' | 'CLOSED';
 export type IssueType = 'BUG' | 'FEATURE' | 'TASK';
 
 export interface CreateIssueRequest {
