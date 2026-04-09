@@ -3,7 +3,6 @@ const backendOrigin = (process.env.BACKEND_ORIGIN || process.env.NEXT_PUBLIC_API
 
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     domains: ['localhost'],
   },
