@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, User, Shield, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { authApi } from '@/lib/api/auth.api';
+import { SignupRequest } from '@/types/auth.types';
 import toast from 'react-hot-toast';
 
 export default function SignupPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SignupRequest>({
     fullName: '',
     email: '',
     password: '',
