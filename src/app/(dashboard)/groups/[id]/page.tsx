@@ -6,7 +6,6 @@ import { Users, FolderKanban, Plus, ArrowLeft, Loader2, Mail, Calendar, Crown, C
 import Link from 'next/link';
 import { groupsApi } from '@/lib/api/groups.api';
 import { projectsApi } from '@/lib/api/projects.api';
-import { authApi } from '@/lib/api/auth.api';
 import { useAuthStore } from '@/lib/stores/authStore';
 import CreateProjectDialog from '@/components/projects/CreateProjectDialog';
 import toast from 'react-hot-toast';
@@ -39,7 +38,7 @@ export default function GroupDetailPage() {
       setGroup(data);
       setInviteCode(data.inviteCode || '');
       
-      // ✅ Fetch members using native query endpoint
+      // Use the dedicated members endpoint
       await fetchMembersDetails();
     } catch (error: any) {
       console.error('❌ Error fetching group:', error);
@@ -50,43 +49,21 @@ export default function GroupDetailPage() {
 
   const fetchMembersDetails = async () => {
     try {
-      // ✅ Step 1: Get member emails from native query endpoint
-      const memberEmails = await groupsApi.getGroupMemberEmails(groupId);
-      console.log('📧 Member emails from backend:', memberEmails);
-      console.log('📧 Count:', memberEmails.length);
-      
-      if (!memberEmails || memberEmails.length === 0) {
-        console.warn('⚠️ No member emails returned from backend!');
-        setMembers([]);
-        return;
-      }
-      
-      // ✅ Step 2: Fetch all users (public endpoint)
-      const allUsers = await authApi.getAvailableUsers();
-      console.log('👥 All users fetched:', allUsers.length);
-      console.log('👥 First user:', allUsers[0]);
-      
-      // ✅ Step 3: Filter users by emails
-      const lowerMemberEmails = memberEmails.map(e => e.toLowerCase());
-      console.log('🔍 Looking for emails:', lowerMemberEmails);
-      
-      const filteredMembers = allUsers.filter(user => {
-        const userEmail = user.email.toLowerCase();
-        const isMatch = lowerMemberEmails.includes(userEmail);
-        if (isMatch) {
-          console.log('✅ Match found:', user.email);
-        }
-        return isMatch;
-      });
-      
-      console.log('✅ Filtered members:', filteredMembers.length);
-      console.log('✅ Members:', filteredMembers);
-      setMembers(filteredMembers);
+      // Use the dedicated GET /groups/{groupId}/members endpoint
+      const membersData = await groupsApi.getGroupMembers(groupId);
+      console.log('👥 Members loaded:', membersData.length);
+      setMembers(membersData);
     } catch (error: any) {
       console.error('❌ Error fetching members:', error);
       console.error('❌ Error details:', error?.response?.data);
       console.error('❌ Status:', error?.response?.status);
-      setMembers([]);
+      
+      // Fallback: if the members endpoint fails, try to use the group details members
+      if (group?.members) {
+        setMembers(group.members);
+      } else {
+        setMembers([]);
+      }
     }
   };
 

@@ -257,14 +257,14 @@ export default function DashboardPage() {
         </div>
 
         {/* Issue Status Distribution */}
-        <div className="lg:col-span-2 bg-[#131316] border border-[#1f1f23] rounded-2xl p-6">
-          <div className="mb-6">
+        {/* <div className="lg:col-span-2 bg-[#131316] border border-[#1f1f23] rounded-2xl p-6"> */}
+          {/* <div className="mb-6">
             <h3 className="text-lg font-semibold text-white mb-1">Issue Status</h3>
             <p className="text-sm text-gray-500">Distribution by status</p>
-          </div>
+          </div> */}
 
           {/* Status Bars */}
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             {trafficSources.map((source, index) => (
               <div key={index}>
                 <div className="h-10 relative rounded-lg overflow-hidden bg-[#1a1a1d]">
@@ -277,14 +277,14 @@ export default function DashboardPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* Footer text */}
-          <div className="mt-6 space-y-2 text-xs text-gray-500">
+          {/* <div className="mt-6 space-y-2 text-xs text-gray-500">
             <p>• Track your issue resolution progress</p>
             <p>• Monitor team productivity metrics</p>
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
       </div>
 
       {/* Quick Stats Cards */}

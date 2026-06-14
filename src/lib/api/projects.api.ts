@@ -5,7 +5,7 @@ import { CreateProjectRequest, Project, ProjectSummary } from '@/types/project.t
 
 export const projectsApi = {
   /**
-   * Create a new project (Admin only)
+   * Create a new project
    * POST /projects
    */
   createProject: async (data: CreateProjectRequest): Promise<Project> => {
@@ -23,7 +23,7 @@ export const projectsApi = {
   },
 
   /**
-   * Get all projects (Admin only)
+   * Get all projects
    * GET /projects/all
    */
   getAllProjects: async (): Promise<Project[]> => {
@@ -41,7 +41,25 @@ export const projectsApi = {
   },
 
   /**
-   * Delete a project (Admin/Owner only)
+   * Get project by ID
+   * GET /projects/{projectId}
+   */
+  getProjectById: async (projectId: number): Promise<Project> => {
+    const response = await apiClient.get(`/projects/${projectId}`);
+    return response.data;
+  },
+
+  /**
+   * Update project
+   * PUT /projects/{projectId}
+   */
+  updateProject: async (projectId: number, data: Partial<CreateProjectRequest>): Promise<Project> => {
+    const response = await apiClient.put(`/projects/${projectId}`, data);
+    return response.data;
+  },
+
+  /**
+   * Delete project
    * DELETE /projects/{projectId}
    */
   deleteProject: async (projectId: number): Promise<void> => {

@@ -21,15 +21,15 @@ export function FeaturesShowcase() {
                             subtitle=""
                         />
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+                    {/* <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
                         Powerful infrastructure,{" "}
                         <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                             effortless experience
                         </span>
-                    </h2>
-                    <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+                    </h2> */}
+                    {/* <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
                         Track projects, stay secure, and monitor everything — all in real time.
-                    </p>
+                    </p> */}
                 </div>
 
                 {/* Bento Grid */}
@@ -49,12 +49,12 @@ export function FeaturesShowcase() {
                         </div>
 
                         <div aria-hidden className="relative">
-                            <div className="absolute inset-0 z-10 m-auto size-fit">
-                                <div className="rounded-xl bg-[#131316] z-[1] relative flex size-fit w-fit items-center gap-2 border border-[#1f1f23] px-3 py-1.5 text-xs font-medium text-white shadow-md shadow-black/20">
+                            {/* <div className="absolute inset-0 z-10 m-auto size-fit"> */}
+                                {/* <div className="rounded-xl bg-[#131316] z-[1] relative flex size-fit w-fit items-center gap-2 border border-[#1f1f23] px-3 py-1.5 text-xs font-medium text-white shadow-md shadow-black/20">
                                     <span className="text-lg">📋</span> 14 issues resolved this sprint
-                                </div>
+                                </div> */}
                                 <div className="rounded-xl bg-[#0d0d0f] absolute inset-2 -bottom-2 mx-auto border border-[#1f1f23] px-3 py-4 text-xs font-medium shadow-md shadow-black/20"></div>
-                            </div>
+                            {/* </div> */}
 
                             <div className="relative overflow-hidden">
                                 <div className="absolute inset-0 z-[1] bg-gradient-radial from-transparent to-[#0d0d0f] to-75%"></div>

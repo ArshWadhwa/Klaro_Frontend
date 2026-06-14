@@ -6,6 +6,7 @@ import { Send, Loader2, FileText, Sparkles, User, Bot, Download, Trash2, PanelLe
 import { documentsApi } from '@/lib/api/documents.api';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useSidebarStore } from '@/lib/stores/sidebarStore';
+import { MessageContent } from '@/components/chat/MessageContent';
 import toast from 'react-hot-toast';
 
 export default function DocumentChatPage() {
@@ -334,20 +335,20 @@ export default function DocumentChatPage() {
                 >
                   {/* Show sender name for others and AI */}
                   {showName && !isOwnMessage && (
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-2">
                       {isAiMessage ? (
                         <>
-                          <div className="h-5 w-5 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                          <div className="h-5 w-5 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
                             <Bot className="h-3 w-3 text-white" />
                           </div>
-                          <span className="text-xs font-medium text-purple-400">AI Assistant</span>
+                          <span className="text-xs font-semibold text-gray-300">AI Assistant</span>
                         </>
                       ) : (
                         <>
-                          <div className="h-5 w-5 bg-emerald-600 rounded-full flex items-center justify-center">
+                          <div className="h-5 w-5 bg-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
                             <User className="h-3 w-3 text-white" />
                           </div>
-                          <span className="text-xs font-medium text-emerald-400">{senderName}</span>
+                          <span className="text-xs font-semibold text-gray-300">{senderName}</span>
                         </>
                       )}
                     </div>
@@ -355,24 +356,24 @@ export default function DocumentChatPage() {
                   
                   {/* Show "You" label for own messages */}
                   {showName && isOwnMessage && (
-                    <span className="text-xs font-medium text-blue-400 mb-1 mr-1">You</span>
+                    <span className="text-xs font-semibold text-blue-300 mb-2 mr-1 block">You</span>
                   )}
                   
                   {/* Message Bubble */}
                   <div
-                    className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${
+                    className={`rounded-lg px-4 py-3 ${
                       isAiMessage
-                        ? 'bg-gradient-to-r from-purple-600/30 to-blue-600/30 border border-purple-500/40 rounded-tl-sm'
+                        ? 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-tl-none max-w-[85%]'
                         : isOwnMessage
-                          ? 'bg-blue-600 rounded-br-sm'
-                          : 'bg-[#2a2a2f] rounded-bl-sm'
+                          ? 'bg-blue-600 rounded-br-none max-w-[70%]'
+                          : 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-bl-none max-w-[70%]'
                     }`}
                   >
-                    <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">
-                      {message.message || message.content}
-                    </p>
-                    <p className={`text-[10px] mt-1 ${
-                      isAiMessage ? 'text-purple-300' : 
+                    <div className="text-white text-sm leading-relaxed">
+                      <MessageContent content={message.message || message.content} />
+                    </div>
+                    <p className={`text-[10px] mt-2 ${
+                      isAiMessage ? 'text-gray-500' : 
                       isOwnMessage ? 'text-blue-200' : 'text-gray-500'
                     }`}>
                       {message.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
@@ -387,24 +388,24 @@ export default function DocumentChatPage() {
             <div className={`flex flex-col ${isAiMode ? 'items-start' : 'items-end'}`}>
               {isAiMode ? (
                 <>
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-5 w-5 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="h-5 w-5 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <Bot className="h-3 w-3 text-white" />
                     </div>
-                    <span className="text-xs font-medium text-purple-400">AI is thinking...</span>
+                    <span className="text-xs font-semibold text-gray-300">AI is thinking...</span>
                   </div>
-                  <div className="bg-gradient-to-r from-purple-600/30 to-blue-600/30 border border-purple-500/40 rounded-2xl rounded-tl-sm px-4 py-3">
+                  <div className="bg-[#1a1a1f] border border-[#2a2a2f] rounded-lg rounded-tl-none px-4 py-3">
                     <div className="flex gap-1.5">
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                     </div>
                   </div>
                 </>
               ) : (
                 <>
-                  <span className="text-xs font-medium text-blue-400 mb-1 mr-1">Sending...</span>
-                  <div className="bg-blue-600 rounded-2xl rounded-br-sm px-4 py-2.5">
+                  <span className="text-xs font-semibold text-blue-300 mb-2 mr-1">Sending...</span>
+                  <div className="bg-blue-600 rounded-lg rounded-br-none px-4 py-3">
                     <Loader2 className="h-4 w-4 text-white animate-spin" />
                   </div>
                 </>
@@ -417,18 +418,18 @@ export default function DocumentChatPage() {
         {/* Input Area */}
         <div className="border-t border-[#1f1f23] px-8 py-6">
           {isAiMode && (
-            <div className="mb-4 px-4 py-3 bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-blue-500/50 rounded-xl flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-blue-400 animate-pulse" />
+            <div className="mb-4 px-4 py-3 bg-[#1a1a1f] border border-blue-500/50 rounded-lg flex items-center gap-3">
+              <Sparkles className="h-5 w-5 text-blue-400" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-white">AI Mode Activated</p>
-                <p className="text-xs text-gray-400">Ask AI anything about this document</p>
+                <p className="text-sm font-semibold text-white">AI Mode Activated</p>
+                <p className="text-xs text-gray-500">Ask AI anything about this document</p>
               </div>
               <button
                 onClick={() => {
                   setIsAiMode(false);
                   setInputMessage('');
                 }}
-                className="text-xs text-gray-400 hover:text-white"
+                className="text-xs text-gray-400 hover:text-white transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -442,27 +443,27 @@ export default function DocumentChatPage() {
               onChange={handleInputChange}
               placeholder={isAiMode ? "Ask AI about the document..." : "Type 'AI ' to activate AI mode or chat with team..."}
               disabled={isLoading}
-              className="flex-1 px-6 py-4 bg-[#131316] border border-[#1f1f23] text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 placeholder:text-gray-500"
+              className="flex-1 px-6 py-3 bg-[#131316] border border-[#2a2a2f] text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 placeholder:text-gray-500 transition-all"
             />
             <button
               type="submit"
               disabled={isLoading || !inputMessage.trim()}
-              className={`px-8 py-4 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+              className={`px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
                 isAiMode
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700'
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             >
               {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : isAiMode ? (
                 <>
-                  <Sparkles className="h-5 w-5" />
+                  <Sparkles className="h-4 w-4" />
                   Ask AI
                 </>
               ) : (
                 <>
-                  <Send className="h-5 w-5" />
+                  <Send className="h-4 w-4" />
                   Send
                 </>
               )}

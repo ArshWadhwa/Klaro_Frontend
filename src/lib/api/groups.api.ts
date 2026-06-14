@@ -10,7 +10,7 @@ import {
 
 export const groupsApi = {
   /**
-   * Create a new group (Admin only)
+   * Create a new group
    * POST /groups
    */
   createGroup: async (data: CreateGroupRequest): Promise<GroupDetails> => {
@@ -28,10 +28,10 @@ export const groupsApi = {
   },
 
   /**
-   * Get all groups (Admin only)
+   * Get all groups
    * GET /groups/all
    */
-  getAllGroups: async (): Promise<GroupSummary[]> => {
+  getAllGroups: async (): Promise<Group[]> => {
     const response = await apiClient.get('/groups/all');
     return response.data;
   },
@@ -42,15 +42,6 @@ export const groupsApi = {
    */
   getGroupById: async (groupId: number): Promise<GroupDetails> => {
     const response = await apiClient.get(`/groups/${groupId}`);
-    return response.data;
-  },
-
-  /**
-   * Get member emails for a group
-   * GET /groups/{groupId}/member-emails
-   */
-  getGroupMemberEmails: async (groupId: number): Promise<string[]> => {
-    const response = await apiClient.get(`/groups/${groupId}/member-emails`);
     return response.data;
   },
 
@@ -66,8 +57,8 @@ export const groupsApi = {
   },
 
   /**
-   * Add member to group (Admin only)
-   * POST /groups/{groupId}/members?memberEmail={email}
+   * Add member to group
+   * POST /groups/{groupId}/members
    */
   addMember: async (groupId: number, memberEmail: string): Promise<GroupDetails> => {
     const response = await apiClient.post(`/groups/${groupId}/members`, null, {
@@ -77,7 +68,7 @@ export const groupsApi = {
   },
 
   /**
-   * Add multiple members to group (Admin only)
+   * Add multiple members to group
    * POST /groups/{groupId}/members/batch
    */
   addMembers: async (groupId: number, memberEmails: string[]): Promise<GroupDetails> => {
@@ -86,8 +77,26 @@ export const groupsApi = {
   },
 
   /**
-   * Remove member from group (Admin only)
-   * DELETE /groups/{groupId}/members?memberEmail={email}
+   * Get group members
+   * GET /groups/{groupId}/members
+   */
+  getGroupMembers: async (groupId: number): Promise<any[]> => {
+    const response = await apiClient.get(`/groups/${groupId}/members`);
+    return response.data;
+  },
+
+  /**
+   * Get member emails for a group
+   * GET /groups/{groupId}/member-emails
+   */
+  getGroupMemberEmails: async (groupId: number): Promise<string[]> => {
+    const response = await apiClient.get(`/groups/${groupId}/member-emails`);
+    return response.data;
+  },
+
+  /**
+   * Remove member from group
+   * DELETE /groups/{groupId}/members
    */
   removeMember: async (groupId: number, memberEmail: string): Promise<GroupDetails> => {
     const response = await apiClient.delete(`/groups/${groupId}/members`, {
@@ -97,7 +106,7 @@ export const groupsApi = {
   },
 
   /**
-   * Delete group (Admin only)
+   * Delete group
    * DELETE /groups/{groupId}
    */
   deleteGroup: async (groupId: number): Promise<string> => {
@@ -106,7 +115,7 @@ export const groupsApi = {
   },
 
   /**
-   * Get invite code for a group (Admin/Owner only)
+   * Get invite code for a group
    * GET /groups/{groupId}/invite-code
    */
   getInviteCode: async (groupId: number): Promise<{ inviteCode: string; groupId: string }> => {
@@ -115,7 +124,7 @@ export const groupsApi = {
   },
 
   /**
-   * Regenerate invite code for a group (Admin/Owner only)
+   * Regenerate invite code for a group
    * POST /groups/{groupId}/regenerate-invite-code
    */
   regenerateInviteCode: async (groupId: number): Promise<{ inviteCode: string; message: string }> => {

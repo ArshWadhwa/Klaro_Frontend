@@ -91,4 +91,31 @@ export const documentsApi = {
     });
     return response.data;
   },
+
+  /**
+   * Trigger RAG reprocessing for a document
+   * POST /documents/{documentId}/reprocess
+   */
+  reprocessDocument: async (documentId: number): Promise<any> => {
+    const response = await apiClient.post(`/documents/${documentId}/reprocess`);
+    return response.data;
+  },
+
+  /**
+   * Check RAG processing status for a document
+   * GET /documents/{documentId}/status
+   */
+  getDocumentStatus: async (documentId: number): Promise<any> => {
+    const response = await apiClient.get(`/documents/${documentId}/status`);
+    return response.data;
+  },
+
+  /**
+   * Test the HuggingFace/Ollama embedding connection
+   * GET /documents/test-embedding
+   */
+  testEmbedding: async (): Promise<any> => {
+    const response = await apiClient.get('/documents/test-embedding');
+    return response.data;
+  },
 };

@@ -1,10 +1,26 @@
 // Auth store using Zustand
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { User } from '@/types/user.types';
 import { authApi } from '@/lib/api/auth.api';
 import { STORAGE_KEYS } from '@/config/constants';
+
+// SSR-safe localStorage wrapper — no-ops on the server
+const ssrSafeStorage = {
+  getItem: (key: string) => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(key);
+  },
+  setItem: (key: string, value: string) => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(key, value);
+  },
+  removeItem: (key: string) => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(key);
+  },
+};
 
 interface AuthState {
   user: User | null;
@@ -40,8 +56,10 @@ export const useAuthStore = create<AuthState>()(
       },
 
       setTokens: (accessToken, refreshToken) => {
-        localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken);
+          localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+        }
         set({ accessToken, refreshToken, isAuthenticated: true });
       },
 
@@ -51,8 +69,10 @@ export const useAuthStore = create<AuthState>()(
         } catch (error) {
           console.error('Logout error:', error);
         } finally {
-          localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-          localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+            localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+          }
           set({
             user: null,
             accessToken: null,
@@ -87,6 +107,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      storage: createJSONStorage(() => ssrSafeStorage),
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

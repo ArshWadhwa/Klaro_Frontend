@@ -4,9 +4,9 @@
   "description": "Klaro - AI-Powered Issue Tracker Frontend",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node --no-experimental-webstorage ./node_modules/.bin/next dev",
+    "build": "node --no-experimental-webstorage ./node_modules/.bin/next build",
+    "start": "node --no-experimental-webstorage ./node_modules/.bin/next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit"
   },
