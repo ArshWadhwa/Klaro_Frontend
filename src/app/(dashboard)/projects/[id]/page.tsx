@@ -64,8 +64,10 @@ export default function ProjectDetailPage() {
     }
   };
 
-  const fetchProjectIssues = async () => {
-    setIsLoadingIssues(true);
+  const fetchProjectIssues = async (silent = false) => {
+    if (!silent) {
+      setIsLoadingIssues(true);
+    }
     try {
       const data = await issuesApi.getIssuesByProject(projectId);
       
@@ -80,7 +82,9 @@ export default function ProjectDetailPage() {
       console.error('Error fetching issues:', error);
       toast.error('Failed to load issues');
     } finally {
-      setIsLoadingIssues(false);
+      if (!silent) {
+        setIsLoadingIssues(false);
+      }
     }
   };
 
@@ -108,7 +112,7 @@ export default function ProjectDetailPage() {
     try {
       await issuesApi.deleteIssue(issueId);
       toast.success('Issue deleted');
-      fetchProjectIssues();
+      fetchProjectIssues(true);
     } catch (error: any) {
       console.error('Error deleting issue:', error);
       const msg = typeof error?.response?.data === 'string' 
@@ -184,8 +188,8 @@ export default function ProjectDetailPage() {
       
       toast.success('Issue moved to ' + (overContainer === 'TO_DO' ? 'To Do' : overContainer === 'IN_PROGRESS' ? 'In Progress' : 'Done'));
       
-      // Refresh to get updated data from backend
-      await fetchProjectIssues();
+      // Refresh to get updated data from backend silently without resetting loading state
+      await fetchProjectIssues(true);
     } catch (error: any) {
       console.error('Error updating issue:', error);
       console.error('Error response:', error?.response);
@@ -197,7 +201,7 @@ export default function ProjectDetailPage() {
       toast.error(errorMessage);
       
       // Revert the change on error
-      fetchProjectIssues();
+      fetchProjectIssues(true);
     }
   };
 

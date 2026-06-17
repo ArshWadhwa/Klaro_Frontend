@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Send, Loader2, FileText, Sparkles, User, Bot, Download, Trash2, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Send, Loader2, FileText, Sparkles, User, Bot, Download, Trash2, PanelLeftClose, PanelLeftOpen, Menu, X } from 'lucide-react';
 import { documentsApi } from '@/lib/api/documents.api';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { useSidebarStore } from '@/lib/stores/sidebarStore';
@@ -23,6 +23,7 @@ export default function DocumentChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetchingDoc, setIsFetchingDoc] = useState(true);
   const [isAiMode, setIsAiMode] = useState(false);
+  const [showDocsMobile, setShowDocsMobile] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   
   // Current user's email for identifying own messages
@@ -169,41 +170,47 @@ export default function DocumentChatPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-120px)] gap-0 -mx-6 -my-6">
-      {/* Sidebar Toggle Button */}
-      <button
-        onClick={toggleSidebar}
-        className="fixed top-[45px] left-2 z-50 p-2 bg-[#131316] border border-[#1f1f23] rounded-lg hover:bg-[#1a1a1d] transition-colors group"
-        title={isCollapsed ? 'Show sidebar' : 'Hide sidebar'}
-      >
-        {isCollapsed ? (
-          <PanelLeftOpen className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
-        ) : (
-          <PanelLeftClose className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
-        )}
-      </button>
+    <div className="flex h-[calc(100vh-120px)] gap-0 -mx-6 -my-6 relative overflow-hidden">
+      {/* Backdrop for Mobile Documents Sidebar */}
+      {showDocsMobile && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden animate-fade-in"
+          onClick={() => setShowDocsMobile(false)}
+        />
+      )}
 
       {/* Left Sidebar - Documents List */}
-      <div className="w-80 bg-[#0d0d0f] border-r border-[#1f1f23] flex flex-col">
+      <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0d0d0f] border-r border-[#1f1f23] flex flex-col transition-transform duration-300 transform md:translate-x-0 md:relative md:w-80 md:flex ${
+        showDocsMobile ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      }`}>
         {/* Header */}
-        <div className="p-6 border-b border-[#1f1f23]">
-          <div className="flex items-center justify-between">
+        <div className="p-6 border-b border-[#1f1f23] flex items-center justify-between">
+          <div>
             <h2 className="text-lg font-bold text-white">Documents</h2>
+            <p className="text-xs text-gray-500 mt-2">
+              Upload documents from project pages
+            </p>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Upload documents from project pages
-          </p>
+          <button 
+            onClick={() => setShowDocsMobile(false)}
+            className="md:hidden p-2 hover:bg-[#1a1a1d] rounded-lg text-gray-400"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         {/* Documents List */}
-     <div
-  ref={chatContainerRef}
-  className="flex-1 overflow-y-auto px-8 py-6 space-y-4"
->
+        <div
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6 space-y-4"
+        >
           {allDocuments.map((doc) => (
             <div
               key={doc.id}
-              onClick={() => router.push(`/documents/${doc.id}/chat`)}
+              onClick={() => {
+                router.push(`/documents/${doc.id}/chat`);
+                setShowDocsMobile(false);
+              }}
               className={`p-4 rounded-xl cursor-pointer transition-all ${
                 doc.id === documentId
                   ? 'bg-[#2a3f5f] border-2 border-blue-500'
@@ -251,36 +258,60 @@ export default function DocumentChatPage() {
       </div>
 
       {/* Right Side - Chat Interface */}
-      <div className="flex-1 flex flex-col bg-[#0d0d0f]">
+      <div className="flex-1 flex flex-col bg-[#0d0d0f] min-w-0">
         {/* Chat Header */}
-        <div className="px-8 py-6 border-b border-[#1f1f23]">
+        <div className="px-4 py-4 md:px-8 md:py-6 border-b border-[#1f1f23]">
           <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h1 className="text-xl font-bold text-white mb-2">
-                Document Chat
-              </h1>
-              {document && (
-                <p className="text-sm text-gray-400">
-                  <span className="text-white font-medium">{document.fileName}</span>
-                  {document.projectName && (
-                    <span className="text-gray-500"> • {document.projectName}</span>
-                  )}
-                </p>
-              )}
+            <div className="flex items-center flex-1 min-w-0">
+              {/* Main Sidebar Toggle Button (Desktop Only) */}
+              <button
+                onClick={toggleSidebar}
+                className="hidden lg:flex mr-4 p-2 bg-[#131316] border border-[#1f1f23] rounded-lg hover:bg-[#1a1a1d] text-gray-400 hover:text-white transition-colors items-center shrink-0"
+                title={isCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+              >
+                {isCollapsed ? (
+                  <PanelLeftOpen className="h-4 w-4" />
+                ) : (
+                  <PanelLeftClose className="h-4 w-4" />
+                )}
+              </button>
+
+              {/* Documents toggle for mobile */}
+              <button
+                onClick={() => setShowDocsMobile(true)}
+                className="md:hidden mr-3 p-2 bg-[#131316] border border-[#1f1f23] rounded-lg hover:bg-[#1a1a1d] text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 shrink-0"
+              >
+                <Menu className="h-4 w-4" />
+                <span className="text-xs font-semibold">Docs</span>
+              </button>
+
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg md:text-xl font-bold text-white mb-1 md:mb-2 truncate">
+                  Document Chat
+                </h1>
+                {document && (
+                  <p className="text-xs md:text-sm text-gray-400 truncate">
+                    <span className="text-white font-medium">{document.fileName}</span>
+                    {document.projectName && (
+                      <span className="text-gray-500"> • {document.projectName}</span>
+                    )}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-6 space-y-4">
           {messages.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="max-w-md mx-auto">
-                <Sparkles className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-white mb-2">
+            <div className="text-center py-12 md:py-20">
+              <div className="max-w-md mx-auto px-4">
+                <Sparkles className="h-12 w-12 md:h-16 md:w-16 text-gray-600 mx-auto mb-4" />
+                <h3 className="text-lg md:text-xl font-semibold text-white mb-2">
                   Start collaborating
                 </h3>
-                <p className="text-gray-400 mb-6">
+                <p className="text-sm text-gray-400 mb-6">
                   Discuss this document with your team or ask AI for insights
                 </p>
                 <div className="bg-[#131316] border border-[#1f1f23] rounded-xl p-4 text-left">
@@ -363,10 +394,10 @@ export default function DocumentChatPage() {
                   <div
                     className={`rounded-lg px-4 py-3 ${
                       isAiMessage
-                        ? 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-tl-none max-w-[85%]'
+                        ? 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-tl-none max-w-[90%] md:max-w-[85%]'
                         : isOwnMessage
-                          ? 'bg-blue-600 rounded-br-none max-w-[70%]'
-                          : 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-bl-none max-w-[70%]'
+                          ? 'bg-blue-600 rounded-br-none max-w-[85%] md:max-w-[70%]'
+                          : 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-bl-none max-w-[85%] md:max-w-[70%]'
                     }`}
                   >
                     <div className="text-white text-sm leading-relaxed">
@@ -416,7 +447,7 @@ export default function DocumentChatPage() {
         </div>
 
         {/* Input Area */}
-        <div className="border-t border-[#1f1f23] px-8 py-6">
+        <div className="border-t border-[#1f1f23] px-4 py-4 md:px-8 md:py-6">
           {isAiMode && (
             <div className="mb-4 px-4 py-3 bg-[#1a1a1f] border border-blue-500/50 rounded-lg flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-blue-400" />
@@ -436,19 +467,19 @@ export default function DocumentChatPage() {
             </div>
           )}
           
-          <form onSubmit={handleSendMessage} className="flex gap-3">
+          <form onSubmit={handleSendMessage} className="flex gap-2 md:gap-3">
             <input
               type="text"
               value={inputMessage}
               onChange={handleInputChange}
-              placeholder={isAiMode ? "Ask AI about the document..." : "Type 'AI ' to activate AI mode or chat with team..."}
+              placeholder={isAiMode ? "Ask AI about the document..." : "Type 'AI ' to activate AI mode or chat..."}
               disabled={isLoading}
-              className="flex-1 px-6 py-3 bg-[#131316] border border-[#2a2a2f] text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 placeholder:text-gray-500 transition-all"
+              className="flex-1 px-4 py-3 md:px-6 bg-[#131316] border border-[#2a2a2f] text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 placeholder:text-gray-500 text-sm transition-all animate-none"
             />
             <button
               type="submit"
               disabled={isLoading || !inputMessage.trim()}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+              className={`px-4 py-3 md:px-6 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                 isAiMode
                   ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'bg-blue-600 text-white hover:bg-blue-700'
@@ -458,20 +489,19 @@ export default function DocumentChatPage() {
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : isAiMode ? (
                 <>
-                  <Sparkles className="h-4 w-4" />
-                  Ask AI
+                  <Sparkles className="h-4 w-4 shrink-0" />
+                  <span className="hidden sm:inline">Ask AI</span>
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4" />
-                  Send
+                  <Send className="h-4 w-4 shrink-0" />
+                  <span className="hidden sm:inline">Send</span>
                 </>
               )}
             </button>
           </form>
         </div>
       </div>
-
     </div>
   );
 }
