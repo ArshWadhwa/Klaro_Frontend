@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { Users, Plus, Search, Loader2, LogIn } from 'lucide-react';
 import Link from 'next/link';
 import { groupsApi } from '@/lib/api/groups.api';
-import { useAuthStore } from '@/lib/stores/authStore';
 import CreateGroupDialog from '@/components/groups/CreateGroupDialog';
 import JoinGroupDialog from '@/components/groups/JoinGroupDialog';
 import toast from 'react-hot-toast';
@@ -15,7 +14,7 @@ export default function GroupsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
-  const isAdmin = useAuthStore(state => state.isAdmin());
+
 
   useEffect(() => {
     fetchGroups();
@@ -77,15 +76,13 @@ export default function GroupsPage() {
             <LogIn className="h-5 w-5" />
             Join Group
           </button>
-          {isAdmin && (
-            <button
-              onClick={() => setIsCreateDialogOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="h-5 w-5" />
-              Create Group
-            </button>
-          )}
+          <button
+            onClick={() => setIsCreateDialogOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="h-5 w-5" />
+            Create Group
+          </button>
         </div>
       </div>
 
@@ -118,7 +115,7 @@ export default function GroupsPage() {
           <p className="text-gray-500 mb-4">
             {searchQuery ? 'Try adjusting your search' : 'Get started by creating your first group'}
           </p>
-          {isAdmin && !searchQuery && (
+          {!searchQuery && (
             <button
               onClick={() => setIsCreateDialogOpen(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

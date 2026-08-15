@@ -119,7 +119,7 @@ export const HeroSection = () => {
                         </div>
                     </div>
                 </section>
-               
+
 
                 {/* Features Bento Grid */}
                 <FeaturesBento />
@@ -129,7 +129,7 @@ export const HeroSection = () => {
 
                 {/* Entropy Section */}
                 {/* <section className="bg-[#0d0d0f] py-24 md:py-32 border-t border-[#1f1f23]"> */}
-                    {/* <div className="mx-auto max-w-7xl px-6">
+                {/* <div className="mx-auto max-w-7xl px-6">
                         <div className="text-center mb-16">
                             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
                                 Order Meets Chaos
@@ -162,13 +162,16 @@ export const HeroSection = () => {
 
 export const Logo = ({ className }: { className?: string }) => {
     return (
-        <div className={cn('flex items-center gap-2', className)}>
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">K</span>
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">
-                Klaro
-            </span>
-        </div>
+        <>
+            <span className="text-gray-100 font-bold text-base text-xl"></span>
+        </>
+        // <div className={cn('flex items-center gap-2', className)}>
+        //     <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+        //         <span className="text-white font-bold text-sm">K</span>
+        //     </div>
+        //     <span className="text-xl font-bold bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">
+        //         Klaro
+        //     </span>
+        // </div>
     )
 }

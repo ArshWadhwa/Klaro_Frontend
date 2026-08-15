@@ -36,21 +36,7 @@ function HandWrittenTitle({
           animate="visible"
           className="w-full h-full"
         >
-          <title>Klaro Handwritten Highlight</title>
-          <motion.path
-            d="M 950 90
-               C 1250 300, 1050 480, 600 520
-               C 250 520, 150 480, 150 300
-               C 150 120, 350 80, 600 80
-               C 850 80, 950 180, 950 180"
-            fill="none"
-            strokeWidth="12"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            variants={draw}
-            className="text-blue-400/80"
-          />
+
         </motion.svg>
       </div>
       <div className="relative z-10 flex flex-col items-center justify-center text-center">

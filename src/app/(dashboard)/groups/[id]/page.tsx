@@ -8,6 +8,7 @@ import { groupsApi } from '@/lib/api/groups.api';
 import { projectsApi } from '@/lib/api/projects.api';
 import { useAuthStore } from '@/lib/stores/authStore';
 import CreateProjectDialog from '@/components/projects/CreateProjectDialog';
+import AddMemberDialog from '@/components/groups/AddMemberDialog';
 import toast from 'react-hot-toast';
 import { GroupDetails } from '@/types/group.types';
 
@@ -25,6 +26,7 @@ export default function GroupDetailPage() {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [inviteCode, setInviteCode] = useState<string>('');
   const [isRegeneratingCode, setIsRegeneratingCode] = useState(false);
+  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
 
   useEffect(() => {
     fetchGroupDetails();
@@ -142,6 +144,7 @@ export default function GroupDetailPage() {
     }
   };
 
+  const isOwner = group && group.ownerEmail === currentUserEmail;
   const isOwnerOrAdmin = group && (group.ownerEmail === currentUserEmail || isAdmin);
 
   if (!group) {
@@ -175,7 +178,7 @@ export default function GroupDetailPage() {
               <p className="text-gray-400 mt-2">{group.description}</p>
             </div>
           </div>
-          {isOwnerOrAdmin && (
+          {isOwner && (
             <button
               onClick={handleDeleteGroup}
               className="flex items-center gap-2 px-4 py-2 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/10 transition-colors text-sm"
@@ -221,8 +224,8 @@ export default function GroupDetailPage() {
         </div>
       </div>
 
-      {/* Invite Code Section - Only visible to Owner or Admin */}
-      {isOwnerOrAdmin && inviteCode && (
+      {/* Invite Code Section - Only visible to Owner */}
+      {isOwner && inviteCode && (
         <div className="bg-[#131316] border border-blue-500/30 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -280,6 +283,15 @@ export default function GroupDetailPage() {
       <div className="bg-[#131316] border border-[#1f1f23] rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-white">Members ({members.length})</h2>
+          {isOwner && (
+            <button
+              onClick={() => setIsAddMemberOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm font-medium"
+            >
+              <Plus className="h-4 w-4" />
+              Add Member
+            </button>
+          )}
         </div>
         <div className="space-y-3">
           {members.length > 0 ? (
@@ -302,7 +314,7 @@ export default function GroupDetailPage() {
                     <Crown className="h-3 w-3" />
                     Owner
                   </span>
-                ) : isOwnerOrAdmin && (
+                ) : isOwner && (
                   <button
                     onClick={() => handleRemoveMember(member.email, member.fullName)}
                     className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
@@ -329,7 +341,7 @@ export default function GroupDetailPage() {
       <div className="bg-[#131316] border border-[#1f1f23] rounded-2xl p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-white">Projects</h2>
-          {isAdmin && (
+          {isOwnerOrAdmin && (
             <button
               onClick={() => setIsCreateProjectOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -385,7 +397,7 @@ export default function GroupDetailPage() {
             <FolderKanban className="h-12 w-12 text-gray-600 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-white mb-2">No projects yet</h3>
             <p className="text-gray-500 mb-4">Get started by creating your first project</p>
-            {isAdmin && (
+            {isOwnerOrAdmin && (
               <button
                 onClick={() => setIsCreateProjectOpen(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -404,6 +416,14 @@ export default function GroupDetailPage() {
         onClose={() => setIsCreateProjectOpen(false)}
         onSuccess={fetchGroupProjects}
         defaultGroupId={groupId}
+      />
+
+      {/* Add Member Dialog */}
+      <AddMemberDialog
+        isOpen={isAddMemberOpen}
+        onClose={() => setIsAddMemberOpen(false)}
+        groupId={groupId}
+        onSuccess={fetchMembersDetails}
       />
     </div>
   );

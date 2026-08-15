@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, Shield, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { authApi } from '@/lib/api/auth.api';
 import { SignupRequest } from '@/types/auth.types';
 import toast from 'react-hot-toast';
@@ -12,12 +12,11 @@ export default function SignupPage() {
   type SignupTextField = Exclude<keyof SignupRequest, 'role'>;
 
   const router = useRouter();
-  const [formData, setFormData] = useState<SignupRequest>({
+  const [formData, setFormData] = useState<Omit<SignupRequest, 'role'>>({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'ROLE_USER',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -45,7 +44,6 @@ export default function SignupPage() {
     try {
       const signupPayload: SignupRequest = {
         ...formData,
-        role: formData.role,
       };
       await authApi.signup(signupPayload);
       toast.success('Account created! Redirecting to login...');
@@ -129,38 +127,7 @@ export default function SignupPage() {
               </div>
             </div>
 
-            {/* Role Selection */}
-            <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
-                Account Type
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, role: 'ROLE_USER' })}
-                  className={`flex items-center justify-center gap-2 py-3 border rounded-xl text-sm font-medium transition-all ${
-                    formData.role === 'ROLE_USER'
-                      ? 'bg-blue-600/20 border-blue-500 text-white'
-                      : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  <User className="h-4.5 w-4.5" />
-                  User
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, role: 'ROLE_ADMIN' })}
-                  className={`flex items-center justify-center gap-2 py-3 border rounded-xl text-sm font-medium transition-all ${
-                    formData.role === 'ROLE_ADMIN'
-                      ? 'bg-blue-600/20 border-blue-500 text-white'
-                      : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  <Shield className="h-4.5 w-4.5" />
-                  Admin
-                </button>
-              </div>
-            </div>
+
 
             {/* Email */}
             <div>

@@ -73,21 +73,21 @@ export default function DashboardClientLayout({ children }: { children: React.Re
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 bottom-0 w-64 bg-[#131316] border-r border-[#1f1f23] transition-transform duration-200 z-40 flex flex-col ${isCollapsed
-            ? '-translate-x-full'
-            : sidebarOpen
-              ? 'translate-x-0'
-              : '-translate-x-full lg:translate-x-0'
+          ? '-translate-x-full'
+          : sidebarOpen
+            ? 'translate-x-0'
+            : '-translate-x-full lg:translate-x-0'
           }`}
       >
         {/* Logo + Org */}
         <div className="p-4 border-b border-[#1f1f23]">
           <Link href="/dashboard" className="flex items-center gap-3 mb-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shrink-0">
+            {/* <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shrink-0">
               <span className="text-white font-bold text-sm">K</span>
-            </div>
-            <span className="text-base font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            </div> */}
+            {/* <span className="text-base font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
               Klaro
-            </span>
+            </span> */}
           </Link>
         </div>
 
@@ -114,8 +114,8 @@ export default function DashboardClientLayout({ children }: { children: React.Re
                 key={item.href}
                 href={item.href}
                 className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-all ${active
-                    ? 'bg-[#1a1a1d] text-white'
-                    : 'text-gray-400 hover:bg-[#1a1a1d] hover:text-gray-200'
+                  ? 'bg-[#1a1a1d] text-white'
+                  : 'text-gray-400 hover:bg-[#1a1a1d] hover:text-gray-200'
                   }`}
                 onClick={() => setSidebarOpen(false)}
               >
