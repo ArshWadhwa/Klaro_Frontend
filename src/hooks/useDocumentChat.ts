@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Client, IMessage, StompHeaders } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 import { useAuthStore } from "@/lib/stores/authStore";
 import { STORAGE_KEYS } from "@/config/constants";
 import { ChatMessage, WebSocketMessagePayload } from "@/types/chat.types";
@@ -88,11 +87,14 @@ export function useDocumentChat(
       Authorization: `Bearer ${effectiveToken}`,
     };
 
-    // Ensure SockJS URL doesn't have double slashes
-    const wsUrl = `${effectiveBaseUrl.replace(/\/+$/, "")}/ws`;
+    // Native WebSocket: convert https:// → wss:// and http:// → ws://
+    // Uses /ws-native endpoint (no SockJS — stable on Render, Netlify, Vercel)
+    const wsProtocol = effectiveBaseUrl.startsWith("https") ? "wss" : "ws";
+    const wsHost = effectiveBaseUrl.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+    const brokerURL = `${wsProtocol}://${wsHost}/ws-native`;
 
     const client = new Client({
-      webSocketFactory: () => new SockJS(wsUrl),
+      brokerURL: brokerURL,
       connectHeaders: headers,
       reconnectDelay: 5000,
       heartbeatIncoming: 10000,
