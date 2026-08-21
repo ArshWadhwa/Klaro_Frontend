@@ -1,12 +1,10 @@
-'use client';
-
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { Client, IMessage, StompHeaders } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import { useAuthStore } from '@/lib/stores/authStore';
-import { STORAGE_KEYS } from '@/config/constants';
-import { ChatMessage, WebSocketMessagePayload } from '@/types/chat.types';
-import toast from 'react-hot-toast';
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Client, IMessage, StompHeaders } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { useAuthStore } from "@/lib/stores/authStore";
+import { STORAGE_KEYS } from "@/config/constants";
+import { ChatMessage, WebSocketMessagePayload } from "@/types/chat.types";
+import toast from "react-hot-toast";
 
 export function useDocumentChat(
   documentId?: number | string | null,
@@ -17,15 +15,20 @@ export function useDocumentChat(
   const effectiveToken =
     jwtToken ||
     storeToken ||
-    (typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) : null);
+    (typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) : null);
 
-  const effectiveBaseUrl =
+  const effectiveBaseUrl = (
     backendBaseUrl ||
-    (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8081').trim();
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    (typeof window !== "undefined" && window.location.protocol === "https:"
+      ? "https://klaro-backend.onrender.com"
+      : "http://localhost:8081")
+  ).trim();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
-  const [streamingChunk, setStreamingChunk] = useState<string>('');
+  const [streamingChunk, setStreamingChunk] = useState<string>("");
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
 
@@ -39,7 +42,7 @@ export function useDocumentChat(
       const response = await fetch(`${effectiveBaseUrl}/documents/${documentId}/chat/history`, {
         headers: {
           Authorization: `Bearer ${effectiveToken}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -48,24 +51,24 @@ export function useDocumentChat(
         if (Array.isArray(history)) {
           const normalized: ChatMessage[] = history.map((msg: any) => ({
             id: msg.id,
-            content: msg.content || msg.message || '',
-            message: msg.message || msg.content || '',
-            senderEmail: msg.senderEmail || msg.email || msg.userEmail || '',
+            content: msg.content || msg.message || "",
+            message: msg.message || msg.content || "",
+            senderEmail: msg.senderEmail || msg.email || msg.userEmail || "",
             senderName:
               msg.senderName ||
               msg.userName ||
-              (msg.senderEmail ? msg.senderEmail.split('@')[0] : 'User'),
-            role: msg.role || (msg.messageType === 'AI' ? 'assistant' : 'user'),
-            messageType: msg.messageType || (msg.role === 'assistant' ? 'AI' : 'USER'),
+              (msg.senderEmail ? msg.senderEmail.split("@")[0] : "User"),
+            role: msg.role || (msg.messageType === "AI" ? "assistant" : "user"),
+            messageType: msg.messageType || (msg.role === "assistant" ? "AI" : "USER"),
             createdAt: msg.createdAt,
           }));
           setMessages(normalized);
         }
       } else {
-        console.error('Failed to load chat history, status:', response.status);
+        console.error("Failed to load chat history, status:", response.status);
       }
     } catch (err) {
-      console.error('Failed to load chat history:', err);
+      console.error("Failed to load chat history:", err);
     }
   }, [documentId, effectiveToken, effectiveBaseUrl]);
 
@@ -73,9 +76,9 @@ export function useDocumentChat(
     fetchChatHistory();
   }, [fetchChatHistory]);
 
-  // 2. Establish STOMP WebSocket Connection
+  // 2. Establish STOMP WebSocket Connection (Strictly independent of UI toggles like isAiMode)
   useEffect(() => {
-    if (!documentId || !effectiveToken || typeof window === 'undefined') {
+    if (!documentId || !effectiveToken || typeof window === "undefined") {
       return;
     }
 
@@ -86,17 +89,17 @@ export function useDocumentChat(
     };
 
     // Ensure SockJS URL doesn't have double slashes
-    const wsUrl = `${effectiveBaseUrl.replace(/\/+$/, '')}/ws`;
+    const wsUrl = `${effectiveBaseUrl.replace(/\/+$/, "")}/ws`;
 
     const client = new Client({
       webSocketFactory: () => new SockJS(wsUrl),
       connectHeaders: headers,
-      reconnectDelay: 4000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+      reconnectDelay: 5000,
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
       debug: (str) => {
         // Uncomment if low-level STOMP frames needed
-        // console.log('[STOMP frame]', str);
+        // console.log("[STOMP frame]", str);
       },
       onConnect: () => {
         setIsConnected(true);
@@ -106,29 +109,30 @@ export function useDocumentChat(
         // Subscribe to document room topic
         client.subscribe(`/topic/document.${documentId}`, (message: IMessage) => {
           try {
+            if (!message.body) return;
             const payload: WebSocketMessagePayload = JSON.parse(message.body);
             console.log(`📥 [STOMP Received] /topic/document.${documentId}:`, payload);
 
-            const msgContent = payload.content || payload.message || '';
-            const msgType = (payload.type || '').toUpperCase();
+            const msgContent = payload.content || payload.message || "";
+            const msgType = (payload.type || "").toUpperCase();
 
-            if (msgType === 'CHUNK') {
+            if (msgType === "CHUNK") {
               // Live AI token streaming chunk
               setIsStreaming(true);
               setStreamingChunk((prev) => prev + msgContent);
-            } else if (msgType === 'DONE') {
+            } else if (msgType === "DONE") {
               // Stream complete - add finalized AI message to message list
               setIsStreaming(false);
-              setStreamingChunk('');
+              setStreamingChunk("");
 
               const aiMessage: ChatMessage = {
                 id: payload.id || `ai-${Date.now()}`,
                 content: msgContent,
                 message: msgContent,
-                senderEmail: payload.senderEmail || 'ai@system',
-                senderName: payload.senderName || 'AI Assistant',
-                role: payload.role || 'assistant',
-                messageType: payload.messageType || 'AI',
+                senderEmail: payload.senderEmail || "ai@system",
+                senderName: payload.senderName || "AI Assistant",
+                role: payload.role || "assistant",
+                messageType: payload.messageType || "AI",
                 createdAt: payload.createdAt || new Date().toISOString(),
               };
 
@@ -139,18 +143,18 @@ export function useDocumentChat(
                 }
                 return [...prev, aiMessage];
               });
-            } else if (msgType === 'CHAT') {
+            } else if (msgType === "CHAT") {
               // New user or peer message broadcast
               const chatMsg: ChatMessage = {
                 id: payload.id || `chat-${Date.now()}`,
                 content: msgContent,
                 message: msgContent,
-                senderEmail: payload.senderEmail || '',
+                senderEmail: payload.senderEmail || "",
                 senderName:
                   payload.senderName ||
-                  (payload.senderEmail ? payload.senderEmail.split('@')[0] : 'User'),
-                role: payload.role || (payload.messageType === 'AI' ? 'assistant' : 'user'),
-                messageType: payload.messageType || (payload.role === 'assistant' ? 'AI' : 'USER'),
+                  (payload.senderEmail ? payload.senderEmail.split("@")[0] : "User"),
+                role: payload.role || (payload.messageType === "AI" ? "assistant" : "user"),
+                messageType: payload.messageType || (payload.role === "assistant" ? "AI" : "USER"),
                 createdAt: payload.createdAt || new Date().toISOString(),
               };
 
@@ -160,13 +164,13 @@ export function useDocumentChat(
                 }
                 return [...prev, chatMsg];
               });
-            } else if (msgType === 'ERROR') {
+            } else if (msgType === "ERROR") {
               setIsStreaming(false);
-              setStreamingChunk('');
-              toast.error(msgContent || 'An error occurred during chat processing');
+              setStreamingChunk("");
+              toast.error(msgContent || "An error occurred during chat processing");
             }
           } catch (e) {
-            console.error('Error parsing STOMP message:', e);
+            console.error("Error parsing STOMP message frame:", e);
           }
         });
       },
@@ -177,14 +181,14 @@ export function useDocumentChat(
       },
       onStompError: (frame) => {
         setIsConnecting(false);
-        console.error('STOMP Error:', frame.headers?.['message'], frame.body);
+        console.error("STOMP Error:", frame.headers?.["message"], frame.body);
       },
       onWebSocketClose: () => {
         setIsConnected(false);
         setIsConnecting(false);
       },
       onWebSocketError: (err) => {
-        console.error('WebSocket Error:', err);
+        console.error("WebSocket Error:", err);
       },
     });
 
@@ -198,15 +202,15 @@ export function useDocumentChat(
     };
   }, [documentId, effectiveToken, effectiveBaseUrl]);
 
-  // 3. Send message helper
+  // 3. Send message helper (Receives isAiMode as an argument directly)
   const sendMessage = useCallback(
     (text: string, isAiMode: boolean = false) => {
       const trimmed = text.trim();
       if (!trimmed) return;
 
       if (!stompClientRef.current || !stompClientRef.current.connected) {
-        console.error('WebSocket not connected');
-        toast.error('Chat connection not active. Reconnecting...');
+        console.error("WebSocket not connected");
+        toast.error("Chat connection not active. Reconnecting...");
         return;
       }
 
