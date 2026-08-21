@@ -21,7 +21,7 @@ export function useDocumentChat(
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
     (typeof window !== "undefined" && window.location.protocol === "https:"
-      ? "https://klaro-backend.onrender.com"
+      ? "https://klaro-4f3b.onrender.com"
       : "http://localhost:8081")
   ).trim();
 
