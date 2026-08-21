@@ -1,12 +1,12 @@
 "use client"
 
-import { Brain, MessageSquare, Sparkles, FileText, Users } from "lucide-react"
+import { Brain, MessageSquare, Sparkles, FileText, Users, Radio } from "lucide-react"
 
 const features = [
   {
-    title: "RAG-Powered Context",
+    title: "RAG-Powered Vector Context",
     description:
-      "Upload documents and get AI answers grounded in your actual content. Our Retrieval-Augmented Generation engine ensures accurate, context-aware responses — no hallucinations.",
+      "Upload documents and get AI answers grounded in your actual content. Our pgvector semantic search engine ensures accurate, context-aware responses with zero hallucinations.",
     icon: Brain,
     className: "md:col-span-1 md:row-span-2",
     accent: "from-blue-500 to-cyan-400",
@@ -34,37 +34,37 @@ const features = [
     ),
   },
   {
-    title: "Collaborative Document Chat",
+    title: "WebSocket Document Rooms",
     description:
-      "Chat with your team directly on uploaded documents. Everyone sees the conversation in real-time — like WhatsApp, but for your project files.",
-    icon: MessageSquare,
+      "Full-duplex STOMP rooms on every file. Instant peer messaging and real-time AI responses broadcast directly to your team — 0ms polling delay.",
+    icon: Radio,
     className: "md:col-span-1",
     accent: "from-green-400 to-emerald-500",
     visual: (
       <div className="mt-4 space-y-2">
         <div className="flex justify-start">
           <div className="bg-[#1f1f23] rounded-xl rounded-tl-sm px-3 py-1.5 text-xs text-gray-400 max-w-[70%]">
-            Check page 12 of the report 📄
+            Check section 4 of the system spec 📄
           </div>
         </div>
         <div className="flex justify-end">
           <div className="bg-blue-600/30 rounded-xl rounded-tr-sm px-3 py-1.5 text-xs text-blue-200 max-w-[70%]">
-            Got it, running analysis now
+            Running RAG query now...
           </div>
         </div>
         <div className="flex justify-start">
-          <div className="bg-purple-500/20 rounded-xl rounded-tl-sm px-3 py-1.5 text-xs text-purple-300 max-w-[70%] flex items-center gap-1">
-            <Sparkles className="h-3 w-3" />
-            AI: Revenue grew 23% YoY...
+          <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl rounded-tl-sm px-3 py-1.5 text-xs text-emerald-300 max-w-[75%] flex items-center gap-1.5">
+            <Sparkles className="h-3 w-3 text-emerald-400 shrink-0" />
+            <span>AI: Latency reduced by 94% using STOMP...</span>
           </div>
         </div>
       </div>
     ),
   },
   {
-    title: '"AI " Mode — Instant Intelligence',
+    title: '"AI " Mode & Token Streaming',
     description:
-      'Type "AI " (AI + space) in any document chat to activate AI mode. Get instant answers from your documents without leaving the conversation.',
+      'Type "AI " or click AI Mode to trigger real-time RAG token streaming. Watch answers generate character-by-character directly in your chat.',
     icon: Sparkles,
     className: "md:col-span-1",
     accent: "from-purple-400 to-violet-500",
@@ -75,12 +75,12 @@ const features = [
             <div className="h-5 w-5 rounded-md bg-purple-500/20 flex items-center justify-center">
               <Sparkles className="h-3 w-3 text-purple-400" />
             </div>
-            <span className="text-xs font-mono text-purple-400">AI Mode Active</span>
+            <span className="text-xs font-mono text-purple-400">Live AI Token Stream</span>
           </div>
           <div className="bg-[#131316] rounded-lg px-3 py-2 border border-purple-500/20">
-            <span className="text-xs text-gray-500">Message: </span>
+            <span className="text-xs text-gray-500">Query: </span>
             <span className="text-xs text-purple-300 font-mono">AI </span>
-            <span className="text-xs text-white">What are the key findings?</span>
+            <span className="text-xs text-white">Summarize key architectural highlights</span>
             <span className="inline-block w-0.5 h-3.5 bg-purple-400 animate-pulse ml-0.5 align-middle" />
           </div>
         </div>
@@ -88,15 +88,15 @@ const features = [
     ),
   },
   {
-    title: "Smart Document Analysis",
+    title: "Smart Document Ingestion",
     description:
-      "Upload PDFs and documents to get AI-powered insights, summaries, and deep analysis. Ask questions and get answers grounded in your actual content.",
+      "Upload PDFs and specifications for automated chunking, embeddings, and deep semantic analysis with instant multi-user Q&A.",
     icon: FileText,
     className: "md:col-span-1",
     accent: "from-amber-400 to-orange-500",
     visual: (
       <div className="mt-4 flex flex-wrap gap-2">
-        {["PDF Analysis", "Key Insights", "Quick Summary", "Q&A"].map((tag) => (
+        {["PDF Chunking", "Semantic Vector Search", "Live Summary", "Multi-Turn Q&A"].map((tag) => (
           <span
             key={tag}
             className="px-2.5 py-1 bg-[#1f1f23] border border-[#2a2a2f] rounded-lg text-xs text-gray-300"
@@ -108,9 +108,9 @@ const features = [
     ),
   },
   {
-    title: "Group Invite System",
+    title: "Instant Group Onboarding",
     description:
-      "Create groups and share invite codes — like Discord. No need to search through all users. Share a code and your team joins instantly.",
+      "Create workspaces and invite teammates with high-entropy cryptographic invite codes. Zero friction onboarding for fast agile teams.",
     icon: Users,
     className: "md:col-span-1",
     accent: "from-pink-400 to-rose-500",
@@ -121,11 +121,10 @@ const features = [
             KLR-X7F2
           </span>
         </div>
-        <p className="text-[10px] text-gray-500 text-center mt-2">Share code → Team joins → Done 🚀</p>
+        <p className="text-[10px] text-gray-500 text-center mt-2">Share Code → Instant Workspace Access 🚀</p>
       </div>
     ),
   },
-
 ]
 
 export function FeaturesBento() {
@@ -135,7 +134,7 @@ export function FeaturesBento() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <p className="text-sm font-medium text-blue-400 tracking-wider uppercase mb-4">
-            Features
+            Platform Capabilities
           </p>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
             Everything you need to{" "}
@@ -144,8 +143,8 @@ export function FeaturesBento() {
             </span>
           </h2>
           <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            AI-powered document analysis, real-time collaboration, and project
-            management — built for teams that move fast.
+            Native WebSocket document collaboration, live AI RAG streaming, and interactive project
+            tracking — engineered for high-velocity teams.
           </p>
         </div>
 

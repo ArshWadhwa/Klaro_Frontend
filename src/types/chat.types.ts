@@ -9,7 +9,7 @@ export interface ChatMessage {
   createdAt?: string;
 }
 
-export type WebSocketMessageType = 'CHUNK' | 'DONE' | 'CHAT' | 'ERROR';
+export type WebSocketMessageType = 'CHUNK' | 'DONE' | 'CHAT' | 'ERROR' | 'TYPING';
 
 export interface WebSocketMessagePayload {
   type: WebSocketMessageType;

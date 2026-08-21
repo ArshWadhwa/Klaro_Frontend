@@ -44,6 +44,7 @@ export default function DocumentChatPage() {
   const {
     messages,
     sendMessage,
+    isAiThinking,
     isStreaming,
     streamingChunk,
     isConnected,
@@ -53,10 +54,10 @@ export default function DocumentChatPage() {
   // Current user's email for identifying own messages
   const currentUserEmail = user?.email || '';
 
-  // Auto-scroll to bottom on new messages or during AI streaming
+  // Auto-scroll to bottom on new messages or during AI thinking / streaming
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, streamingChunk, isStreaming]);
+  }, [messages, streamingChunk, isStreaming, isAiThinking]);
 
   useEffect(() => {
     fetchAllDocuments();
@@ -187,9 +188,8 @@ export default function DocumentChatPage() {
 
       {/* Left Sidebar - Documents List */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0d0d0f] border-r border-[#1f1f23] flex flex-col transition-transform duration-300 transform md:translate-x-0 md:relative md:w-80 md:flex ${
-          showDocsMobile ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0d0d0f] border-r border-[#1f1f23] flex flex-col transition-transform duration-300 transform md:translate-x-0 md:relative md:w-80 md:flex ${showDocsMobile ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          }`}
       >
         {/* Header */}
         <div className="p-6 border-b border-[#1f1f23] flex items-center justify-between">
@@ -216,11 +216,10 @@ export default function DocumentChatPage() {
                 router.push(`/documents/${doc.id}/chat`);
                 setShowDocsMobile(false);
               }}
-              className={`p-3.5 rounded-xl cursor-pointer transition-all ${
-                doc.id === documentId
-                  ? 'bg-[#2a3f5f] border-2 border-blue-500 shadow-md shadow-blue-500/10'
-                  : 'bg-[#18181c] border border-[#2a2a2f] hover:border-[#3a3a42] hover:bg-[#202026]'
-              }`}
+              className={`p-3.5 rounded-xl cursor-pointer transition-all ${doc.id === documentId
+                ? 'bg-[#2a3f5f] border-2 border-blue-500 shadow-md shadow-blue-500/10'
+                : 'bg-[#18181c] border border-[#2a2a2f] hover:border-[#3a3a42] hover:bg-[#202026]'
+                }`}
             >
               <div className="flex items-center justify-between mb-1.5">
                 <h3 className="font-medium text-white text-sm truncate flex-1">
@@ -300,29 +299,27 @@ export default function DocumentChatPage() {
 
                   {/* STOMP WebSocket Status Badge */}
                   <div
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                      isConnected
-                        ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/60'
-                        : isConnecting
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${isConnected
+                      ? 'bg-emerald-950/40 text-emerald-400 border-emerald-800/60'
+                      : isConnecting
                         ? 'bg-amber-950/40 text-amber-400 border-amber-800/60'
                         : 'bg-red-950/40 text-red-400 border-red-800/60'
-                    }`}
+                      }`}
                   >
                     <span
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        isConnected
-                          ? 'bg-emerald-400 animate-pulse'
-                          : isConnecting
+                      className={`w-1.5 h-1.5 rounded-full ${isConnected
+                        ? 'bg-emerald-400 animate-pulse'
+                        : isConnecting
                           ? 'bg-amber-400 animate-pulse'
                           : 'bg-red-400'
-                      }`}
+                        }`}
                     />
                     <span>
                       {isConnected
                         ? 'Live'
                         : isConnecting
-                        ? 'Connecting...'
-                        : 'Reconnecting...'}
+                          ? 'Connecting...'
+                          : 'Reconnecting...'}
                     </span>
                   </div>
                 </div>
@@ -401,8 +398,8 @@ export default function DocumentChatPage() {
                 prevMessage?.senderEmail || (prevMessage as any)?.email || '';
               const prevIsAi = prevMessage
                 ? prevMessage.messageType === 'AI' ||
-                  prevMessage.role === 'assistant' ||
-                  prevMessage.messageType === 'ASSISTANT'
+                prevMessage.role === 'assistant' ||
+                prevMessage.messageType === 'ASSISTANT'
                 : false;
 
               const showName =
@@ -449,37 +446,59 @@ export default function DocumentChatPage() {
 
                   {/* Message Bubble */}
                   <div
-                    className={`rounded-lg px-4 py-3 ${
-                      isAiMessage
-                        ? 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-tl-none max-w-[90%] md:max-w-[85%]'
-                        : isOwnMessage
+                    className={`rounded-lg px-4 py-3 ${isAiMessage
+                      ? 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-tl-none max-w-[90%] md:max-w-[85%]'
+                      : isOwnMessage
                         ? 'bg-blue-600 rounded-br-none max-w-[85%] md:max-w-[70%]'
                         : 'bg-[#1a1a1f] border border-[#2a2a2f] rounded-bl-none max-w-[85%] md:max-w-[70%]'
-                    }`}
+                      }`}
                   >
                     <div className="text-white text-sm leading-relaxed">
                       <MessageContent content={message.message || message.content} />
                     </div>
                     <p
-                      className={`text-[10px] mt-2 ${
-                        isAiMessage
-                          ? 'text-gray-500'
-                          : isOwnMessage
+                      className={`text-[10px] mt-2 ${isAiMessage
+                        ? 'text-gray-500'
+                        : isOwnMessage
                           ? 'text-blue-200'
                           : 'text-gray-500'
-                      }`}
+                        }`}
                     >
                       {message.createdAt
                         ? new Date(message.createdAt).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
                         : ''}
                     </p>
                   </div>
                 </div>
               );
             })
+          )}
+
+          {/* AI Thinking & Vector Search Indicator */}
+          {isAiThinking && !isStreaming && (
+            <div className="flex flex-col items-start animate-fade-in">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-5 w-5 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md shadow-indigo-500/20">
+                  <Bot className="h-3 w-3 text-white" />
+                </div>
+                <span className="text-xs font-semibold text-gray-300">AI Assistant</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-medium animate-pulse border border-indigo-500/30">
+                  Searching document & thinking...
+                </span>
+              </div>
+              <div className="rounded-lg px-4 py-3 bg-[#16161b] border border-indigo-500/30 rounded-tl-none flex items-center gap-3 shadow-lg shadow-indigo-500/5">
+                {/* <Sparkles className="w-4 h-4 text-indigo-400 animate-spin" /> */}
+                <span className="text-xs text-gray-300 font-medium">Klaro AI is searching document & thinking...</span>
+                <span className="flex items-center gap-1 ml-1">
+                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" />
+                </span>
+              </div>
+            </div>
           )}
 
           {/* Live Typing & Token Streaming Bubble */}
@@ -527,7 +546,7 @@ export default function DocumentChatPage() {
         <div className="border-t border-[#1f1f23] px-4 py-4 md:px-8 md:py-6 bg-[#0d0d0f]">
           {isAiMode && (
             <div className="mb-4 px-4 py-3 bg-[#1a1a1f] border border-blue-500/50 rounded-lg flex items-center gap-3 animate-fade-in">
-              <Sparkles className="h-5 w-5 text-blue-400 shrink-0" />
+              {/* <Sparkles className="h-5 w-5 text-blue-400 shrink-0" /> */}
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">AI Mode Active</p>
                 <p className="text-xs text-gray-400">
@@ -563,11 +582,10 @@ export default function DocumentChatPage() {
               type="button"
               onClick={() => setIsAiMode((prev) => !prev)}
               title={isAiMode ? 'Disable AI Mode' : 'Enable AI Mode'}
-              className={`px-3 py-3 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-semibold shrink-0 ${
-                isAiMode
-                  ? 'bg-blue-600 border-blue-500 text-white shadow-md shadow-blue-500/20'
-                  : 'bg-[#131316] border-[#2a2a2f] text-gray-400 hover:text-white hover:border-[#3a3a42]'
-              }`}
+              className={`px-3 py-3 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-semibold shrink-0 ${isAiMode
+                ? 'bg-blue-600 border-blue-500 text-white shadow-md shadow-blue-500/20'
+                : 'bg-[#131316] border-[#2a2a2f] text-gray-400 hover:text-white hover:border-[#3a3a42]'
+                }`}
             >
               <Sparkles className={`h-4 w-4 ${isAiMode ? 'text-white' : 'text-blue-400'}`} />
               <span className="hidden sm:inline">AI Mode: {isAiMode ? 'ON' : 'OFF'}</span>

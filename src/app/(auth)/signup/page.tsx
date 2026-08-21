@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, User, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { authApi } from '@/lib/api/auth.api';
 import { SignupRequest } from '@/types/auth.types';
 import toast from 'react-hot-toast';
@@ -69,57 +70,125 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0d0f] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background glow effects */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="w-full max-w-md relative z-10">
-        {/* Logo */}
-        <div className="text-center mb-10">
-          <Link href="/" className="inline-flex items-center gap-2.5 group mb-6">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-shadow">
-              <span className="text-white font-bold text-base">K</span>
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+    <div className="min-h-screen bg-[#09090b] flex flex-col lg:flex-row text-zinc-100">
+      {/* Left Side: Preview Showcase with Smooth Slide Animation (Desktop) */}
+      <div className="hidden lg:flex lg:w-1/2 xl:w-3/5 flex-col justify-between p-10 xl:p-14 border-r border-zinc-800/80 bg-[#0c0c0e] relative overflow-hidden">
+        {/* Brand */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Link href="/" className="inline-flex items-center gap-2.5">
+            <span className="text-5xl font-semibold tracking-tight text-white">
               Klaro
             </span>
           </Link>
-          <h1 className="text-3xl font-bold text-white">Create your account</h1>
-          <p className="text-zinc-400 mt-2">Start managing your projects today</p>
+        </motion.div>
+
+        {/* Content & Animated Dashboard Image */}
+        <div className="my-auto py-8 max-w-xl">
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-2xl xl:text-3xl font-semibold text-zinc-100 tracking-tight leading-snug"
+          >
+            Plan, track, and collaborate on your projects in one workspace.
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-zinc-400 text-sm mt-3 leading-relaxed"
+          >
+            Create groups, invite teammates, and manage your issues and project documentation seamlessly.
+          </motion.p>
+
+          {/* Smooth Slide & Float Dashboard Preview Image */}
+          <motion.div
+            initial={{ opacity: 0, y: 35, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ y: -5, transition: { duration: 0.3, ease: 'easeOut' } }}
+            className="mt-8 rounded-xl border border-zinc-800 bg-[#141417] overflow-hidden shadow-2xl relative group cursor-pointer"
+          >
+            <img
+              src="/dashboard-preview.png"
+              alt="Klaro Dashboard Preview"
+              className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.015]"
+            />
+          </motion.div>
         </div>
 
-        {/* Form Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl shadow-black/40">
+        {/* Footer info */}
+        <div className="text-xs text-zinc-600">
+          © {new Date().getFullYear()} Klaro. All rights reserved.
+        </div>
+      </div>
+
+      {/* Right Side: Simple Clean Signup Form */}
+      <div className="w-full lg:w-1/2 xl:w-2/5 flex flex-col justify-between p-6 sm:p-10 md:p-12 bg-[#09090b]">
+        {/* Top bar */}
+        <div className="flex items-center justify-between">
+          <Link href="/" className="lg:hidden inline-flex items-center gap-2">
+            <span className="text-xl font-bold text-white">Klaro</span>
+          </Link>
+
+          <Link
+            href="/"
+            className="ml-auto text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+          >
+            ← Back to home
+          </Link>
+        </div>
+
+        {/* Form Container */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="w-full max-w-sm mx-auto my-auto py-8"
+        >
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold text-white tracking-tight">
+              Create Account
+            </h1>
+            <p className="text-zinc-400 text-sm mt-1.5">
+              Sign up to start organizing your team projects.
+            </p>
+          </div>
+
           {error && (
-            <div className="mb-5 p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400">
-              <AlertCircle className="h-5 w-5 shrink-0" />
-              <span className="text-sm">{error}</span>
+            <div className="mb-5 p-3 bg-red-950/30 border border-red-900/40 rounded-lg flex items-start gap-2.5 text-red-300 text-xs animate-fade-in">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-400" />
+              <div className="flex-1 leading-snug">{error}</div>
             </div>
           )}
 
           {success && (
-            <div className="mb-5 p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center gap-3 text-emerald-400">
-              <CheckCircle2 className="h-5 w-5 shrink-0" />
-              <span className="text-sm">Account created! Redirecting to login...</span>
+            <div className="mb-5 p-3 bg-emerald-950/30 border border-emerald-900/40 rounded-lg flex items-start gap-2.5 text-emerald-300 text-xs animate-fade-in">
+              <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-400" />
+              <div className="flex-1 leading-snug">Account created! Redirecting to login...</div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             {/* Full Name */}
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-zinc-300 mb-2">
+              <label htmlFor="fullName" className="block text-xs font-medium text-zinc-300 mb-1.5">
                 Full Name
               </label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-zinc-500" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <input
                   id="fullName"
                   name="fullName"
                   type="text"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-sm"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-[#121214] border border-zinc-800 rounded-lg text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
                   placeholder="John Doe"
                   required
                   minLength={2}
@@ -127,23 +196,22 @@ export default function SignupPage() {
               </div>
             </div>
 
-
-
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
-                Email address
+              <label htmlFor="email" className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-zinc-500" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <input
                   id="email"
                   name="email"
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-sm"
-                  placeholder="you@example.com"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-[#121214] border border-zinc-800 rounded-lg text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
+                  placeholder="name@example.com"
+                  autoComplete="email"
                   required
                 />
               </div>
@@ -151,19 +219,20 @@ export default function SignupPage() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-2">
+              <label htmlFor="password" className="block text-xs font-medium text-zinc-300 mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-zinc-500" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-11 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-sm"
+                  className="w-full pl-10 pr-10 py-2.5 bg-[#121214] border border-zinc-800 rounded-lg text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   required
                   minLength={6}
                 />
@@ -172,28 +241,29 @@ export default function SignupPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
                   tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-              <p className="text-xs text-zinc-600 mt-1.5">Minimum 6 characters</p>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-zinc-300 mb-2">
+              <label htmlFor="confirmPassword" className="block text-xs font-medium text-zinc-300 mb-1.5">
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-zinc-500" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-11 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-sm"
+                  className="w-full pl-10 pr-10 py-2.5 bg-[#121214] border border-zinc-800 rounded-lg text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   required
                 />
                 <button
@@ -201,45 +271,47 @@ export default function SignupPage() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
                   tabIndex={-1}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showConfirmPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Submit */}
+            {/* Submit Button in Blue */}
             <button
               type="submit"
               disabled={loading || success}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-blue-600/25 hover:shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-blue-500 mt-2"
+              className="w-full mt-2 py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium text-sm transition-colors duration-150 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Creating account...
+                  <span>Creating Account...</span>
                 </span>
               ) : (
-                'Create account'
+                'Create Account'
               )}
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-zinc-500">
+          {/* Login link */}
+          <div className="mt-6 text-center text-xs text-zinc-400">
             Already have an account?{' '}
-            <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+            <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium hover:underline">
               Sign in
             </Link>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="mt-5 text-center">
-          <Link href="/" className="text-sm text-zinc-600 hover:text-zinc-400 transition-colors">
-            ← Back to home
-          </Link>
+        {/* Bottom copyright on mobile */}
+        <div className="lg:hidden text-center text-xs text-zinc-600 pt-4">
+          © {new Date().getFullYear()} Klaro
         </div>
+        <div className="hidden lg:block"></div>
       </div>
     </div>
   );

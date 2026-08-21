@@ -37,33 +37,26 @@
 
 ## 2. Real-Time Communication & Networking
 
-### Q2: "Why haven't you used WebSockets for the Document Chat and Kanban board? Isn't Polling inefficient?"
+### Q2: "How is real-time communication implemented for Document Chat and AI Streaming in Klaro?"
 
 > **Strong Answer:**
-> *"That is a classic engineering tradeoff between **operational complexity vs. system requirements at our current scale**.*
+> *"We implemented a **Full-Duplex STOMP over Native WebSockets architecture** connecting Spring Boot and Next.js 15:
 >
-> *We intentionally chose **Short Polling (3-second interval for active chat)** over WebSockets for our initial phase due to four concrete architectural reasons:*
->
-> 1. ***Statelessness & Horizontal Scalability:*** *WebSockets require persistent, stateful TCP connections held open on a specific server instance. In a horizontally scaled cluster behind a standard round-robin Load Balancer (like AWS ALB or Nginx), WebSockets require sticky sessions or an external Pub/Sub message broker (such as Redis Pub/Sub or RabbitMQ STOMP) to route messages across nodes. REST polling is completely stateless, allowing any backend pod to serve any request without state synchronization.*
-> 2. ***Firewall & Proxy Compatibility:*** *Standard HTTP requests bypass restrictive corporate firewalls, reverse proxies, and VPNs that frequently drop or terminate long-lived WebSocket connections.*
-> 3. ***Connection & Resource Overhead:*** *Maintaining thousands of idle WebSocket connections consumes server file descriptors and memory. For our Document Chat, users collaborate intermittently rather than in sub-millisecond high-frequency trading conditions.*
-> 4. ***Simplicity & Fault Recovery:*** *If a client loses network connectivity, HTTP polling automatically recovers on the next interval without complex exponential backoff reconnection algorithms, heartbeat pings, or missed message replay buffers.*
->
-> ***How I would evolve this in production:***  
-> *For true real-time scale, our migration roadmap is:*
-> - *For **Document Chat & Issue Updates**: Implement **Server-Sent Events (SSE)** via `text/event-stream`. SSE is unidirectional (Server-to-Client), works over standard HTTP/2 (multiplexed over a single TCP connection), natively handles reconnections, and uses simple REST POSTs for client messages.*
-> - *For **Collaborative Cursor / Live Kanban Dragging**: Implement **WebSockets backed by Redis Pub/Sub** to broadcast position deltas across active group channels.*
+> 1. ***Native WebSocket Endpoint (`/ws-native`):*** *We route persistent bidirectional TCP connections over `wss://` (production on Render/Netlify) and `ws://` (local development), bypassing proxy limitations and avoiding problematic iframe fallback chains.*
+> 2. ***STOMP Pub/Sub Room Topics:*** *Clients subscribe to granular document channels (`/topic/document.{documentId}`) and publish messages to `@MessageMapping("/chat.send/{documentId}")`.*
+> 3. ***Live Token-by-Token AI Streaming:*** *When a query with `aiMode: true` is received, the backend spins off an asynchronous worker (`CompletableFuture.runAsync()`) that queries pgvector for document context and streams LLM token chunks line-by-line using `CHUNK` payloads, followed by a `DONE` finalization frame.*
+> 4. ***Security & Heartbeats:*** *STOMP `CONNECT` frames are validated with JWT interceptors (`WebSocketAuthInterceptor`), with 10-second client/server heartbeats and automatic client reconnection.*"
 
 ---
 
 ### Q3: "Compare WebSockets, Server-Sent Events (SSE), Short Polling, and Long Polling. When should each be used?"
 
-| Mechanism | Protocol | Direction | Connection | Best Use Case | Overhead / Tradeoff |
+| Mechanism | Protocol | Direction | Connection | Best Use Case | Klaro Implementation |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Short Polling** *(Klaro MVP)* | HTTP/1.1 or HTTP/2 | Bidirectional (Separate Requests) | Closed after response | Low-frequency updates, simple MVPs, stateless backends | Extra HTTP header overhead on each request |
-| **Long Polling** | HTTP/1.1 | Bidirectional | Held open until data arrives | Legacy chat, low-complexity event notification | Server thread/socket held open |
-| **Server-Sent Events (SSE)** | HTTP/2 | Unidirectional (Server $\rightarrow$ Client) | Persistent single stream | Live feeds, AI streaming responses, notifications | Client-to-server requires standard REST API |
-| **WebSockets** | WS / WSS (TCP) | Full-Duplex Bidirectional | Persistent stateful socket | Multiplayer games, collaborative editing (Figma), high-frequency trading | High complexity, requires Redis Pub/Sub for clustering |
+| **WebSockets (STOMP)** | WS / WSS (TCP) | Full-Duplex Bidirectional | Persistent stateful socket | Multiplayer collaboration, real-time chat, AI token streaming | **Primary**: Document chat rooms, AI streaming (`/ws-native`), live broadcast |
+| **Server-Sent Events (SSE)** | HTTP/2 | Unidirectional (Server $\rightarrow$ Client) | Persistent single stream | Live news feeds, notifications, one-way dashboards | Alternative for unidirectional feeds |
+| **Short Polling** | HTTP/1.1 or HTTP/2 | Bidirectional (Separate Requests) | Closed after response | Simple low-frequency fallback, health checks | Background notification checks |
+| **Long Polling** | HTTP/1.1 | Bidirectional | Held open until data arrives | Legacy environments lacking WS support | Legacy fallback |
 
 ---
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { Activity, FolderKanban, Shield } from 'lucide-react'
+import { Activity, FolderKanban, Shield, Zap, Radio, Sparkles, Cpu, Lock } from 'lucide-react'
 import DottedMap from 'dotted-map'
 import { Area, AreaChart, CartesianGrid } from 'recharts'
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
@@ -8,53 +8,52 @@ import { HandWrittenTitle } from '@/components/ui/hand-writing-text'
 
 export function FeaturesShowcase() {
     return (
-        <section className="bg-[#0d0d0f] px-4 py-16 md:py-24">
+        <section className="bg-[#0d0d0f] px-4 py-16 md:py-24 border-t border-[#1f1f23]">
             <div className="mx-auto max-w-5xl">
                 {/* Section Header */}
-                <div className="text-center mb-12">
-                    <p className="text-sm font-medium text-blue-400 tracking-wider uppercase mb-4">
-                        Built for Scale
-                    </p>
-                    <div className="-mb-8">
+                <div className="text-center mb-14">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-semibold text-blue-400 tracking-wider uppercase mb-4">
+                        <Zap className="size-3.5" />
+                        Next-Gen Real-Time Architecture
+                    </div>
+                    <div className="-mb-6">
                         <HandWrittenTitle
                             title="Discuss Faster, Decide Better"
-                            subtitle=""
+                            subtitle="Full-duplex WebSockets, contextual AI streaming, and enterprise issue tracking — with zero polling overhead."
                         />
                     </div>
-                    {/* <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-                        Powerful infrastructure,{" "}
-                        <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                            effortless experience
-                        </span>
-                    </h2> */}
-                    {/* <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-                        Track projects, stay secure, and monitor everything — all in real time.
-                    </p> */}
                 </div>
 
                 {/* Bento Grid */}
-                <div className="grid border border-[#1f1f23] rounded-2xl overflow-hidden md:grid-cols-2">
+                <div className="grid border border-[#1f1f23] rounded-2xl overflow-hidden md:grid-cols-2 bg-[#0a0a0c]/60 backdrop-blur-sm">
                     {/* Card 1: Project & Issue Tracking with Map */}
-                    <div>
+                    <div className="relative group">
                         <div className="p-6 sm:p-12">
-                            <span className="text-gray-400 flex items-center gap-2 text-sm">
+                            <span className="text-gray-400 flex items-center gap-2 text-sm font-medium">
                                 <FolderKanban className="size-4 text-cyan-400" />
                                 Project & Issue Tracking
                             </span>
 
-                            <p className="mt-8 text-2xl font-semibold text-white">
-                                Kanban boards, issue tracking, and sprint management.{" "}
-                                <span className="text-gray-500">Organize work across distributed teams.</span>
+                            <p className="mt-6 text-2xl font-semibold text-white leading-snug">
+                                Interactive Kanban boards & sprint management.{" "}
+                                <span className="text-gray-500">Organize distributed engineering workflows effortlessly.</span>
                             </p>
+
+                            <div className="mt-6 flex flex-wrap gap-2">
+                                <span className="px-2.5 py-1 bg-[#131316] border border-[#1f1f23] rounded-md text-xs text-gray-300">
+                                    📋 Drag & Drop Kanban
+                                </span>
+                                <span className="px-2.5 py-1 bg-[#131316] border border-[#1f1f23] rounded-md text-xs text-gray-300">
+                                    ⚡ Optimistic UI Updates
+                                </span>
+                                <span className="px-2.5 py-1 bg-[#131316] border border-[#1f1f23] rounded-md text-xs text-gray-300">
+                                    👥 Multi-Tenant Groups
+                                </span>
+                            </div>
                         </div>
 
-                        <div aria-hidden className="relative">
-                            {/* <div className="absolute inset-0 z-10 m-auto size-fit"> */}
-                                {/* <div className="rounded-xl bg-[#131316] z-[1] relative flex size-fit w-fit items-center gap-2 border border-[#1f1f23] px-3 py-1.5 text-xs font-medium text-white shadow-md shadow-black/20">
-                                    <span className="text-lg">📋</span> 14 issues resolved this sprint
-                                </div> */}
-                                <div className="rounded-xl bg-[#0d0d0f] absolute inset-2 -bottom-2 mx-auto border border-[#1f1f23] px-3 py-4 text-xs font-medium shadow-md shadow-black/20"></div>
-                            {/* </div> */}
+                        <div aria-hidden className="relative mt-2">
+                            <div className="rounded-xl bg-[#0d0d0f] absolute inset-2 -bottom-2 mx-auto border border-[#1f1f23] px-3 py-4 text-xs font-medium shadow-md shadow-black/20"></div>
 
                             <div className="relative overflow-hidden">
                                 <div className="absolute inset-0 z-[1] bg-gradient-radial from-transparent to-[#0d0d0f] to-75%"></div>
@@ -64,75 +63,99 @@ export function FeaturesShowcase() {
                     </div>
 
                     {/* Card 2: Enterprise Security */}
-                    <div className="overflow-hidden border-t border-[#1f1f23] bg-[#0a0a0c] p-6 sm:p-12 md:border-0 md:border-l">
+                    <div className="overflow-hidden border-t border-[#1f1f23] bg-[#0d0d0f]/80 p-6 sm:p-12 md:border-0 md:border-l flex flex-col justify-between">
                         <div className="relative z-10">
-                            <span className="text-gray-400 flex items-center gap-2 text-sm">
+                            <span className="text-gray-400 flex items-center gap-2 text-sm font-medium">
                                 <Shield className="size-4 text-emerald-400" />
                                 Enterprise-Grade Security
                             </span>
 
-                            <p className="my-8 text-2xl font-semibold text-white">
-                                JWT auth, role-based access, and encrypted data.{" "}
-                                <span className="text-gray-500">Your projects are always protected.</span>
+                            <p className="my-6 text-2xl font-semibold text-white leading-snug">
+                                JWT stateless validation, silent refresh, & RBAC.{" "}
+                                <span className="text-gray-500">Resource-scoped permissions across all groups.</span>
                             </p>
                         </div>
 
-                        {/* Security Chat Visual */}
-                        <div aria-hidden className="flex flex-col gap-6">
+                        {/* Security Chat / Audit Visual */}
+                        <div aria-hidden className="flex flex-col gap-4 mt-2">
                             <div>
                                 <div className="flex items-center gap-2">
                                     <span className="flex justify-center items-center size-5 rounded-full border border-[#1f1f23]">
-                                        <span className="size-3 rounded-full bg-emerald-500" />
+                                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                                     </span>
-                                    <span className="text-gray-500 text-xs">Security Audit</span>
-                                </div>
-                                <div className="rounded-xl bg-[#131316] mt-1.5 w-3/5 border border-[#1f1f23] p-3 text-xs text-gray-300">
-                                    All endpoints verified. No vulnerabilities found.
-                                </div>
-                            </div>
-
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <span className="flex justify-center items-center size-5 rounded-full border border-[#1f1f23]">
-                                        <span className="size-3 rounded-full bg-blue-500" />
-                                    </span>
-                                    <span className="text-gray-500 text-xs">Access Control</span>
+                                    <span className="text-gray-500 text-xs font-mono">Security Audit & Interceptors</span>
                                 </div>
                                 <div className="rounded-xl bg-[#131316] mt-1.5 w-4/5 border border-[#1f1f23] p-3 text-xs text-gray-300">
-                                    RBAC enforced: Admin, Member, Viewer roles active across 12 groups.
+                                    🛡️ Axios JWT Interceptors active: Auto silent refresh with 0 session interruptions.
                                 </div>
                             </div>
 
                             <div>
-                                <div className="rounded-xl mb-1 ml-auto w-3/5 bg-emerald-600 p-3 text-xs text-white">
-                                    ✅ JWT tokens rotating. Refresh cycle: 24h. Zero expired sessions.
+                                <div className="flex items-center gap-2">
+                                    <span className="flex justify-center items-center size-5 rounded-full border border-[#1f1f23]">
+                                        <span className="size-2 rounded-full bg-blue-500" />
+                                    </span>
+                                    <span className="text-gray-500 text-xs font-mono">Access Control Hierarchy</span>
                                 </div>
-                                <span className="text-gray-500 block text-right text-xs">Just now</span>
+                                <div className="rounded-xl bg-[#131316] mt-1.5 w-full border border-[#1f1f23] p-3 text-xs text-gray-300">
+                                    🔐 Granular resource ownership: Group Owners, Admins, & Members scoped per workspace.
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="rounded-xl mb-1 ml-auto w-4/5 bg-emerald-950/40 border border-emerald-800/50 p-3 text-xs text-emerald-300">
+                                    ✅ Cryptographically secure invite codes & end-to-end tenant isolation.
+                                </div>
+                                <span className="text-gray-500 block text-right text-xs font-mono">Verified Live</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Card 3: Uptime Banner
-                    <div className="col-span-full border-y border-[#1f1f23] p-12 bg-[#0d0d0f]">
-                        <p className="text-center text-4xl font-semibold lg:text-7xl text-white">
-                            99.99% <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Uptime</span>
-                        </p>
-                    </div> */}
+                    {/* Card 3: Real-Time WebSocket & AI Token Streaming */}
+                    <div className="relative col-span-full border-t border-[#1f1f23] bg-gradient-to-b from-[#0e0e12] to-[#0a0a0c]">
+                        <div className="relative z-10 max-w-2xl px-6 pr-12 pt-8 md:px-12 md:pt-10">
+                            <div className="flex items-center gap-3">
+                                <span className="text-gray-400 flex items-center gap-2 text-sm font-medium">
+                                    <Radio className="size-4 text-emerald-400 animate-pulse" />
+                                    Real-Time WebSocket Engine
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-950/60 text-emerald-400 border border-emerald-800/60">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                                    Native STOMP (wss://)
+                                </span>
+                            </div>
 
-                    {/* Card 4: Activity Monitoring Chart */}
-                    <div className="relative col-span-full">
-                        <div className="absolute z-10 max-w-lg px-6 pr-12 pt-6 md:px-12 md:pt-12">
-                            <span className="text-gray-400 flex items-center gap-2 text-sm">
-                                <Activity className="size-4 text-blue-400" />
-                                Performance Monitoring
-                            </span>
-
-                            <p className="my-8 text-2xl font-semibold text-white">
-                                Lightning-fast polling with real-time sync.{" "}
-                                <span className="text-gray-500">Monitor activity and resolve issues instantly.</span>
+                            <p className="my-6 text-2xl md:text-3xl font-semibold text-white leading-snug">
+                                Full-duplex STOMP WebSockets with live AI token streaming.{" "}
+                                <span className="text-gray-500">
+                                    Zero polling overhead, sub-millisecond message dispatch, and live character-by-character RAG insights.
+                                </span>
                             </p>
+
+                            <div className="flex flex-wrap gap-2.5 mb-6">
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#131316] border border-[#1f1f23] text-xs text-gray-300">
+                                    <Sparkles className="size-3.5 text-blue-400" />
+                                    <span>Token-by-Token Streaming</span>
+                                </div>
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#131316] border border-[#1f1f23] text-xs text-gray-300">
+                                    <Cpu className="size-3.5 text-purple-400" />
+                                    <span>Sub-10ms Frame Latency</span>
+                                </div>
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#131316] border border-[#1f1f23] text-xs text-gray-300">
+                                    <Radio className="size-3.5 text-emerald-400" />
+                                    <span>Room Topic Broadcasts</span>
+                                </div>
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#131316] border border-[#1f1f23] text-xs text-gray-300">
+                                    <Lock className="size-3.5 text-amber-400" />
+                                    <span>JWT STOMP Handshake</span>
+                                </div>
+                            </div>
                         </div>
-                        <MonitoringChart />
+
+                        {/* Chart Area */}
+                        <div className="relative mt-2">
+                            <MonitoringChart />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -162,49 +185,51 @@ const Map = () => {
 }
 
 const chartConfig = {
-    issues: {
-        label: 'Issues Resolved',
-        color: '#2563eb',
+    messages: {
+        label: 'WebSocket Messages (req/s)',
+        color: '#3b82f6',
     },
-    commits: {
-        label: 'Commits',
-        color: '#60a5fa',
+    tokens: {
+        label: 'AI Streamed Tokens (tok/s)',
+        color: '#10b981',
     },
 } satisfies ChartConfig
 
 const chartData = [
-    { month: 'May', issues: 56, commits: 224 },
-    { month: 'June', issues: 56, commits: 224 },
-    { month: 'January', issues: 126, commits: 252 },
-    { month: 'February', issues: 205, commits: 410 },
-    { month: 'March', issues: 200, commits: 126 },
-    { month: 'April', issues: 400, commits: 800 },
+    { time: '00:00', messages: 120, tokens: 480 },
+    { time: '04:00', messages: 240, tokens: 960 },
+    { time: '08:00', messages: 680, tokens: 2840 },
+    { time: '12:00', messages: 1450, tokens: 5900 },
+    { time: '16:00', messages: 1890, tokens: 7400 },
+    { time: '20:00', messages: 1100, tokens: 4200 },
 ]
 
 const MonitoringChart = () => {
     return (
-        <ChartContainer className="h-120 aspect-auto md:h-96" config={chartConfig}>
+        <ChartContainer className="h-72 w-full aspect-auto md:h-80" config={chartConfig}>
             <AreaChart
                 accessibilityLayer
                 data={chartData}
                 margin={{
-                    left: 0,
-                    right: 0,
+                    left: 12,
+                    right: 12,
+                    top: 10,
+                    bottom: 0,
                 }}>
                 <defs>
-                    <linearGradient id="fillIssues" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--color-issues)" stopOpacity={0.8} />
-                        <stop offset="55%" stopColor="var(--color-issues)" stopOpacity={0.1} />
+                    <linearGradient id="fillMessages" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.5} />
+                        <stop offset="85%" stopColor="#3b82f6" stopOpacity={0.02} />
                     </linearGradient>
-                    <linearGradient id="fillCommits" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--color-commits)" stopOpacity={0.8} />
-                        <stop offset="55%" stopColor="var(--color-commits)" stopOpacity={0.1} />
+                    <linearGradient id="fillTokens" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10b981" stopOpacity={0.6} />
+                        <stop offset="85%" stopColor="#10b981" stopOpacity={0.02} />
                     </linearGradient>
                 </defs>
-                <CartesianGrid vertical={false} stroke="#1f1f23" />
+                <CartesianGrid vertical={false} stroke="#1f1f23" strokeDasharray="3 3" />
                 <ChartTooltip active cursor={false} content={<ChartTooltipContent />} />
-                <Area strokeWidth={2} dataKey="commits" type="stepBefore" fill="url(#fillCommits)" fillOpacity={0.1} stroke="var(--color-commits)" stackId="a" />
-                <Area strokeWidth={2} dataKey="issues" type="stepBefore" fill="url(#fillIssues)" fillOpacity={0.1} stroke="var(--color-issues)" stackId="a" />
+                <Area strokeWidth={2} dataKey="messages" type="monotone" fill="url(#fillMessages)" stroke="#3b82f6" />
+                <Area strokeWidth={2} dataKey="tokens" type="monotone" fill="url(#fillTokens)" stroke="#10b981" />
             </AreaChart>
         </ChartContainer>
     )

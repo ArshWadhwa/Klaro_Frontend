@@ -26,6 +26,7 @@ export function useDocumentChat(
   ).trim();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isAiThinking, setIsAiThinking] = useState<boolean>(false);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [streamingChunk, setStreamingChunk] = useState<string>("");
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -75,7 +76,7 @@ export function useDocumentChat(
     fetchChatHistory();
   }, [fetchChatHistory]);
 
-  // 2. Establish STOMP WebSocket Connection (Strictly independent of UI toggles like isAiMode)
+  // 2. Establish STOMP WebSocket Connection
   useEffect(() => {
     if (!documentId || !effectiveToken || typeof window === "undefined") {
       return;
@@ -88,7 +89,6 @@ export function useDocumentChat(
     };
 
     // Native WebSocket: convert https:// → wss:// and http:// → ws://
-    // Uses /ws-native endpoint (no SockJS — stable on Render, Netlify, Vercel)
     const wsProtocol = effectiveBaseUrl.startsWith("https") ? "wss" : "ws";
     const wsHost = effectiveBaseUrl.replace(/^https?:\/\//, "").replace(/\/+$/, "");
     const brokerURL = `${wsProtocol}://${wsHost}/ws-native`;
@@ -99,10 +99,6 @@ export function useDocumentChat(
       reconnectDelay: 5000,
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,
-      debug: (str) => {
-        // Uncomment if low-level STOMP frames needed
-        // console.log("[STOMP frame]", str);
-      },
       onConnect: () => {
         setIsConnected(true);
         setIsConnecting(false);
@@ -118,12 +114,17 @@ export function useDocumentChat(
             const msgContent = payload.content || payload.message || "";
             const msgType = (payload.type || "").toUpperCase();
 
-            if (msgType === "CHUNK") {
-              // Live AI token streaming chunk
+            if (msgType === "TYPING") {
+              // Server started RAG search & LLM generation
+              setIsAiThinking(true);
+            } else if (msgType === "CHUNK") {
+              // Live AI token streaming chunk arrived -> switch thinking to streaming
+              setIsAiThinking(false);
               setIsStreaming(true);
               setStreamingChunk((prev) => prev + msgContent);
             } else if (msgType === "DONE") {
-              // Stream complete - add finalized AI message to message list
+              // Stream complete - finalize AI message
+              setIsAiThinking(false);
               setIsStreaming(false);
               setStreamingChunk("");
 
@@ -167,6 +168,7 @@ export function useDocumentChat(
                 return [...prev, chatMsg];
               });
             } else if (msgType === "ERROR") {
+              setIsAiThinking(false);
               setIsStreaming(false);
               setStreamingChunk("");
               toast.error(msgContent || "An error occurred during chat processing");
@@ -179,15 +181,18 @@ export function useDocumentChat(
       onDisconnect: () => {
         setIsConnected(false);
         setIsConnecting(false);
+        setIsAiThinking(false);
         console.log(`🔴 Disconnected from STOMP room: /topic/document.${documentId}`);
       },
       onStompError: (frame) => {
         setIsConnecting(false);
+        setIsAiThinking(false);
         console.error("STOMP Error:", frame.headers?.["message"], frame.body);
       },
       onWebSocketClose: () => {
         setIsConnected(false);
         setIsConnecting(false);
+        setIsAiThinking(false);
       },
       onWebSocketError: (err) => {
         console.error("WebSocket Error:", err);
@@ -204,7 +209,7 @@ export function useDocumentChat(
     };
   }, [documentId, effectiveToken, effectiveBaseUrl]);
 
-  // 3. Send message helper (Receives isAiMode as an argument directly)
+  // 3. Send message helper (Optimistically sets isAiThinking when AI mode is active)
   const sendMessage = useCallback(
     (text: string, isAiMode: boolean = false) => {
       const trimmed = text.trim();
@@ -214,6 +219,10 @@ export function useDocumentChat(
         console.error("WebSocket not connected");
         toast.error("Chat connection not active. Reconnecting...");
         return;
+      }
+
+      if (isAiMode) {
+        setIsAiThinking(true);
       }
 
       const payload = {
@@ -234,6 +243,7 @@ export function useDocumentChat(
   return {
     messages,
     sendMessage,
+    isAiThinking,
     isStreaming,
     streamingChunk,
     isConnected,
