@@ -16,7 +16,6 @@ import {
   Settings,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Toaster } from 'react-hot-toast';
 import { useSidebarStore } from '@/lib/stores/sidebarStore';
 
 export default function DashboardClientLayout({ children }: { children: React.ReactNode }) {
@@ -184,18 +183,6 @@ export default function DashboardClientLayout({ children }: { children: React.Re
           onClick={() => setSidebarOpen(false)}
         />
       )}
-
-      {/* Toast Notifications */}
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: '#1a1a1d',
-            color: '#fff',
-            border: '1px solid #2a2a2e',
-          },
-        }}
-      />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Users, FolderKanban, Plus, ArrowLeft, Loader2, Mail, Calendar, Crown, Copy, RefreshCw, Share2, Trash2, UserMinus } from 'lucide-react';
+import { Users, FolderKanban, Plus, ArrowLeft, Loader2, Mail, Calendar, Crown, Copy, RefreshCw, Share2, Trash2, UserMinus, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { groupsApi } from '@/lib/api/groups.api';
 import { projectsApi } from '@/lib/api/projects.api';
@@ -23,31 +23,54 @@ export default function GroupDetailPage() {
   const [members, setMembers] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasAccess, setHasAccess] = useState(true);
+  const [isProjectsLoading, setIsProjectsLoading] = useState(false);
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [inviteCode, setInviteCode] = useState<string>('');
   const [isRegeneratingCode, setIsRegeneratingCode] = useState(false);
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
 
   useEffect(() => {
-    fetchGroupDetails();
-    fetchGroupProjects();
-  }, [groupId]);
-
-  const fetchGroupDetails = async () => {
-    try {
-      const data = await groupsApi.getGroupById(groupId);
-      console.log('✅ Group loaded:', data.name, '- Members:', data.memberCount);
-      setGroup(data);
-      setInviteCode(data.inviteCode || '');
-      
-      // Use the dedicated members endpoint
-      await fetchMembersDetails();
-    } catch (error: any) {
-      console.error('❌ Error fetching group:', error);
-      toast.error('Failed to load group details');
-      setTimeout(() => router.push('/groups'), 2000);
+    if (!groupId || isNaN(groupId)) {
+      toast.error('Invalid group ID');
+      router.replace('/groups');
+      return;
     }
-  };
+
+    async function loadGroup() {
+      try {
+        setIsLoading(true);
+        setHasAccess(true);
+        const data = await groupsApi.getGroupById(groupId);
+        console.log('✅ Group loaded:', data.name, '- Members:', data.memberCount);
+        setGroup(data);
+        setInviteCode(data.inviteCode || '');
+
+        // Fetch members and projects once group access is confirmed
+        await Promise.allSettled([
+          fetchMembersDetails(),
+          fetchGroupProjects(),
+        ]);
+      } catch (error: any) {
+        console.error('❌ Error fetching group:', error);
+        if (error.response?.status === 403) {
+          setHasAccess(false);
+          const message = error.response?.data?.message || "You don't have access to this group.";
+          toast.error(message);
+          router.replace('/groups');
+        } else if (error.response?.status === 404) {
+          toast.error('Group not found.');
+          router.replace('/groups');
+        } else {
+          toast.error('Failed to load group details.');
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadGroup();
+  }, [groupId, router]);
 
   const fetchMembersDetails = async () => {
     try {
@@ -70,21 +93,22 @@ export default function GroupDetailPage() {
   };
 
   const fetchGroupProjects = async () => {
-    setIsLoading(true);
+    setIsProjectsLoading(true);
     try {
       const data = await projectsApi.getProjectsByGroup(groupId);
       setProjects(data);
     } catch (error: any) {
       console.error('Error fetching projects:', error);
       console.error('Error details:', error?.response?.data);
-      // Don't show error toast if it's just empty
-      if (error?.response?.status !== 404) {
+      if (error?.response?.status === 403) {
+        setProjects([]);
+      } else if (error?.response?.status !== 404) {
         toast.error('Failed to load projects');
       } else {
         setProjects([]); // Empty array for 404
       }
     } finally {
-      setIsLoading(false);
+      setIsProjectsLoading(false);
     }
   };
 
@@ -147,10 +171,56 @@ export default function GroupDetailPage() {
   const isOwner = group && group.ownerEmail === currentUserEmail;
   const isOwnerOrAdmin = group && (group.ownerEmail === currentUserEmail || isAdmin);
 
-  if (!group) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
+        <div className="h-16 w-16 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center text-red-400">
+          <ShieldAlert className="h-8 w-8" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-2">Access Denied</h2>
+          <p className="text-gray-400 max-w-md">
+            You are not a member of this group and do not have permission to view it.
+          </p>
+        </div>
+        <button
+          onClick={() => router.replace('/groups')}
+          className="mt-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to My Groups
+        </button>
+      </div>
+    );
+  }
+
+  if (!group) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
+        <div className="h-16 w-16 bg-gray-500/10 border border-[#1f1f23] rounded-2xl flex items-center justify-center text-gray-400">
+          <Users className="h-8 w-8" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-2">Group Not Found</h2>
+          <p className="text-gray-400 max-w-md">
+            The group you are looking for does not exist or has been removed.
+          </p>
+        </div>
+        <button
+          onClick={() => router.replace('/groups')}
+          className="mt-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to My Groups
+        </button>
       </div>
     );
   }
@@ -352,7 +422,7 @@ export default function GroupDetailPage() {
           )}
         </div>
 
-        {isLoading ? (
+        {isProjectsLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
           </div>

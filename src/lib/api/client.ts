@@ -99,7 +99,7 @@ apiClient.interceptors.response.use(
 
     // Handle 403 Forbidden
     if (error.response?.status === 403) {
-      console.error('🚫 403 Forbidden - Check permissions');
+      console.warn('🚫 Forbidden access attempt (403):', originalRequest?.url);
     }
 
     return Promise.reject(error);

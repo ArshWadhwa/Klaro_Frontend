@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Space_Grotesk } from 'next/font/google';
-import { Toaster } from 'react-hot-toast';
+import ToastProvider from '@/components/providers/ToastProvider';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -11,6 +11,9 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: 'Klaro - AI-Powered Issue Tracker',
   description: 'Collaborative project management and issue tracking for development teams',
+ icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
@@ -22,16 +25,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={spaceGrotesk.className}>
         {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: {
-              background: '#1a1a1d',
-              color: '#fff',
-              border: '1px solid #2a2a2e',
-            },
-          }}
-        />
+        <ToastProvider />
       </body>
     </html>
   );
